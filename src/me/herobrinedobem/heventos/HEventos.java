@@ -5,15 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import me.herobrinedobem.heventos.batataquente.ListenersBatataQuente;
 import me.herobrinedobem.heventos.databases.MySQL;
 import me.herobrinedobem.heventos.databases.SQLite;
-import me.herobrinedobem.heventos.eventos.Listeners;
-import me.herobrinedobem.heventos.frog.ListenersFrog;
-import me.herobrinedobem.heventos.killer.ListenersKiller;
-import me.herobrinedobem.heventos.minamortal.ListenersMinaMortal;
-import me.herobrinedobem.heventos.paintball.ListenersPaintball;
-import me.herobrinedobem.heventos.spleef.ListenersSpleef;
 import me.herobrinedobem.heventos.utils.ConfigUtil;
 import me.herobrinedobem.heventos.utils.EventoVerifyHour;
 import me.herobrinedobem.heventos.utils.EventosController;
@@ -29,13 +22,6 @@ public class HEventos extends JavaPlugin {
 	private Economy economy;
 	private ConfigUtil configUtil;
 	private final MainListeners mainListeners = new MainListeners();
-	private final ListenersBatataQuente listenersBatataQuente = new ListenersBatataQuente();
-	private final ListenersMinaMortal listenersMinaMortal = new ListenersMinaMortal();
-	private final ListenersSpleef listenersSpleef = new ListenersSpleef();
-	private final ListenersFrog listenersFrog = new ListenersFrog();
-	private final ListenersKiller listenersKiller = new ListenersKiller();
-	private final ListenersPaintball listenersPaintball = new ListenersPaintball();
-	private final Listeners listeners = new Listeners(this);
 
 	@Override
 	public void onEnable() {
@@ -47,8 +33,12 @@ public class HEventos extends JavaPlugin {
 			} else {
 				Bukkit.getConsoleSender().sendMessage("§9[HEventos] §fConfig.yml carregada com sucesso!");
 			}
+			final Plugin plug = this.getServer().getPluginManager().getPlugin("SimpleClans");
+			if (plug != null) {
+				this.sc = ((SimpleClans) plug);
+			}
 			this.eventosController = new EventosController(this);
-			this.eventosController.setEventoOcorrendo(null);
+			this.eventosController.setEvento(null);
 			File eventosFile;
 			eventosFile = new File(this.getDataFolder() + File.separator + "Eventos");
 			if (!eventosFile.exists()) {
@@ -107,8 +97,8 @@ public class HEventos extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if (this.eventosController.getEventoOcorrendo() != null) {
-			this.eventosController.getEventoOcorrendo().cancelarEvento();
+		if (this.eventosController.getEvento() != null) {
+			this.eventosController.getEvento().cancelEvent();
 		}
 		Bukkit.getConsoleSender().sendMessage("§9[HEventos] §fPlugin Desabilitado - (Versao §9" + this.getDescription().getVersion() + "§f)");
 	}
@@ -133,10 +123,6 @@ public class HEventos extends JavaPlugin {
 		return this.sqlite;
 	}
 
-	public Listeners getListeners() {
-		return this.listeners;
-	}
-
 	public ConfigUtil getConfigUtil() {
 		return this.configUtil;
 	}
@@ -157,31 +143,8 @@ public class HEventos extends JavaPlugin {
 		return this.mysql;
 	}
 
-	public ListenersBatataQuente getListenersBatataQuente() {
-		return this.listenersBatataQuente;
-	}
-
-	public ListenersMinaMortal getListenersMinaMortal() {
-		return this.listenersMinaMortal;
-	}
-
-	public ListenersSpleef getListenersSpleef() {
-		return this.listenersSpleef;
-	}
-
-	public ListenersPaintball getListenersPaintball() {
-		return this.listenersPaintball;
-	}
-
-	public ListenersFrog getListenersFrog() {
-		return this.listenersFrog;
-	}
-
-	public ListenersKiller getListenersKiller() {
-		return this.listenersKiller;
-	}
-
 	public SimpleClans getSc() {
 		return this.sc;
 	}
+
 }

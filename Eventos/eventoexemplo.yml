@@ -1,5 +1,6 @@
 Config:
   Nome: "Parkour"
+  Evento_Type: "normal"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   PVP: false

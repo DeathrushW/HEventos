@@ -1,5 +1,6 @@
 Config:
   Nome: "PaintBall"
+  Evento_Type: "paintball"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   PVP: false

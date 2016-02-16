@@ -1,5 +1,6 @@
 Config:
   Nome: "Spleef"
+  Evento_Type: "spleef"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   Regenerar_Chao: true

@@ -1,5 +1,6 @@
 Config:
   Nome: "Killer"
+  Evento_Type: "killer"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   Tempo_Pegar_Itens: 60

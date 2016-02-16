@@ -8,19 +8,17 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import me.herobrinedobem.heventos.batataquente.BatataQuente;
-import me.herobrinedobem.heventos.eventos.Evento;
-import me.herobrinedobem.heventos.frog.Frog;
-import me.herobrinedobem.heventos.killer.Killer;
-import me.herobrinedobem.heventos.minamortal.MinaMortal;
-import me.herobrinedobem.heventos.paintball.Paintball;
-import me.herobrinedobem.heventos.spleef.Spleef;
+import me.herobrinedobem.heventos.utils.EventoBase;
+import me.herobrinedobem.heventos.utils.EventoType;
 
 public class Comandos implements CommandExecutor {
+
+	public static void main(final String[] args) {
+		System.out.print('a' > 'b');
+	}
 
 	private final HEventos instance;
 
@@ -37,227 +35,42 @@ public class Comandos implements CommandExecutor {
 
 			if (cmd.getName().equalsIgnoreCase("evento")) {
 				if ((args.length == 1) && (args[0].equalsIgnoreCase("entrar"))) {
-					if (HEventos.getHEventos().getEventosController().getEventoOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().isVip()) {
+					if (HEventos.getHEventos().getEventosController().getEvento() != null) {
+						if (!HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(p.getName())) {
+							if (HEventos.getHEventos().getEventosController().getEvento().isAberto()) {
+								if (HEventos.getHEventos().getEventosController().getEvento().isVip()) {
 									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
-											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
+										if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
+											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
 										}
-										return true;
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().add(p.getName());
-									p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getAguarde());
-									for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-									}
-									return true;
-								}
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().isVip()) {
-									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-										}
-										return true;
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().add(p.getName());
-									p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getAguarde());
-									for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-									}
-									return true;
-								}
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().isVip()) {
-									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-										}
-										return true;
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().add(p.getName());
-									p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getAguarde());
-									for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-									}
-									return true;
-								}
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo().isVip()) {
-									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-										}
-										return true;
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().add(p.getName());
-									p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getAguarde());
-									for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-									}
-									return true;
-								}
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getFrogOcorrendo().isAberto()) {
-								HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes().add(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getFrogOcorrendo().getAguarde());
-								for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-								}
-								return true;
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().isVip()) {
-									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p.getName()) != null) {
-											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p.getName()).setFriendlyFire(true);
-										}
-										HEventos.getHEventos().getServer().dispatchCommand(p, "clan ff allow");
-										HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-										}
-										return true;
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().add(p.getName());
-									p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getAguarde());
-									for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
-									}
-									return true;
-								}
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().contains(p.getName())) {
-							if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().isAberto()) {
-								if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().isVip()) {
-									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
-										if (Comandos.isInventoryEmpty(p)) {
-											HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().add(p.getName());
-											p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getAguarde());
-											for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
-												final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-												pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
+										if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) {
+											if (!Comandos.isInventoryEmpty(p)) {
+												p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
+												return false;
 											}
-											return true;
-										} else {
-											p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
-											return true;
 										}
-									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
-										return true;
-									}
-								} else {
-									if (Comandos.isInventoryEmpty(p)) {
-										HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().add(p.getName());
-										p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getAguarde());
-										for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
+										HEventos.getHEventos().getEventosController().getEvento().getParticipantes().add(p.getName());
+										p.teleport(HEventos.getHEventos().getEventosController().getEvento().getAguarde());
+										for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
 										}
 										return true;
 									} else {
-										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
+										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
 										return true;
 									}
+								} else {
+									if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
+										HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+									}
+									HEventos.getHEventos().getEventosController().getEvento().getParticipantes().add(p.getName());
+									p.teleport(HEventos.getHEventos().getEventosController().getEvento().getAguarde());
+									for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
+										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
+										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
+									}
+									return true;
 								}
 							} else {
 								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoFechado());
@@ -269,26 +82,26 @@ public class Comandos implements CommandExecutor {
 						}
 					}
 				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("sair"))) {
-					if (HEventos.getHEventos().getEventosController().getEventoOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().contains(p.getName())) {
-							for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
+					if (HEventos.getHEventos().getEventosController().getEvento() != null) {
+						if (HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(p.getName())) {
+							for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 								final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 								pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
 							}
-							HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().remove(p.getName());
-							p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getSaida());
+							HEventos.getHEventos().getEventosController().getEvento().getParticipantes().remove(p.getName());
+							p.teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
 							return true;
 						} else {
-							if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getSaida());
+							if (HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().contains(p.getName())) {
+								p.teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
 								p.setAllowFlight(false);
 								p.setFlying(false);
-								for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
+								for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 									pa.showPlayer(p);
 								}
-								HEventos.getHEventos().getEventosController().getEventoOcorrendo().getCamarotePlayers().remove(p.getName());
-								for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
+								HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().remove(p.getName());
+								for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
 								}
@@ -298,276 +111,15 @@ public class Comandos implements CommandExecutor {
 								return true;
 							}
 						}
-					} else if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getFrogOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getFrogOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getFrogOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getFrogOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().isAberto() == false) {
-									p.setHealth(0);
-								}
-								HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getKillerOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() != null) {
-							if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().contains(p.getName())) {
-								for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								}
-								if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().isAberto() == false) {
-									p.setHealth(0);
-								}
-								HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().remove(p.getName());
-								p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getSaida());
-								return true;
-							} else {
-								if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getSaida());
-									p.setAllowFlight(false);
-									p.setFlying(false);
-									for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.showPlayer(p);
-									}
-									HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getCamarotePlayers().remove(p.getName());
-									for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
-										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-									}
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
-								} else {
-									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
-									return true;
-								}
-							}
-						}
-					} else {
-						p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNenhumEvento());
-						return true;
 					}
 				} else if ((args.length == 3) && (args[0].equalsIgnoreCase("iniciar"))) {
 					if (p.hasPermission("heventos.admin")) {
-						if ((HEventos.getHEventos().getEventosController().getEventoOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getKillerOcorrendo() == null) && (HEventos.getHEventos().getEventosController().getFrogOcorrendo() == null)) {
+						if (HEventos.getHEventos().getEventosController().getEvento() == null) {
 							if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
-								if (args[1].equalsIgnoreCase("batataquente")) {
-									if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersBatataQuente(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/batataquente.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setBatataQuenteOcorrendo(new BatataQuente(configEvento));
-										HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (args[1].equalsIgnoreCase("minamortal")) {
-									if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersMinaMortal(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/minamortal.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setMinaMortalOcorrendo(new MinaMortal(configEvento));
-										HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (args[1].equalsIgnoreCase("spleef")) {
-									if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersSpleef(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/spleef.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setSpleefOcorrendo(new Spleef(configEvento));
-										HEventos.getHEventos().getEventosController().getSpleefOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getSpleefOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (args[1].equalsIgnoreCase("frog")) {
-									if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersFrog(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/frog.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setFrogOcorrendo(new Frog(configEvento));
-										// HEventos.getHEventos().getEventosController().getFrogOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getFrogOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (args[1].equalsIgnoreCase("killer")) {
-									if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersKiller(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/killer.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setKillerOcorrendo(new Killer(configEvento));
-										HEventos.getHEventos().getEventosController().getKillerOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getKillerOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (args[1].equalsIgnoreCase("paintball")) {
-									if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() == null) {
-										HEventos.getHEventos().getServer().getPluginManager().registerEvents(HEventos.getHEventos().getListenersPaintball(), HEventos.getHEventos());
-										final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/paintball.yml");
-										final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
-										HEventos.getHEventos().getEventosController().setPaintBallOcorrendo(new Paintball(configEvento));
-										HEventos.getHEventos().getEventosController().getPaintballOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-										HEventos.getHEventos().getEventosController().getPaintballOcorrendo().start();
-										p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
-										return true;
-									}
-								} else if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-									HEventos.getHEventos().getEventosController().setEventoOcorrendo(HEventos.getHEventos().getEventosController().loadEvento(args[1]));
-									HEventos.getHEventos().getEventosController().getEventoOcorrendo().setVip(Boolean.parseBoolean(args[2]));
-									HEventos.getHEventos().getEventosController().getEventoOcorrendo().start();
+								if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
+									HEventos.getHEventos().getEventosController().setEvento(args[1], EventoType.getEventoType(args[1]));
+									HEventos.getHEventos().getEventosController().getEvento().setVip(Boolean.parseBoolean(args[2]));
+									HEventos.getHEventos().getEventosController().getEvento().run();
 									p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
 									return true;
 								} else {
@@ -588,32 +140,8 @@ public class Comandos implements CommandExecutor {
 					return true;
 				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("cancelar"))) {
 					if (p.hasPermission("heventos.admin")) {
-						if (HEventos.getHEventos().getEventosController().getEventoOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getEventoOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getSpleefOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getFrogOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getKillerOcorrendo().cancelarEvento();
-							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
-							return true;
-						} else if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() != null) {
-							HEventos.getHEventos().getEventosController().getPaintballOcorrendo().cancelarEvento();
+						if (HEventos.getHEventos().getEventosController().getEvento() != null) {
+							HEventos.getHEventos().getEventosController().getEvento().cancelEvent();
 							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
 							return true;
 						} else {
@@ -627,21 +155,21 @@ public class Comandos implements CommandExecutor {
 						return true;
 					}
 				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("assistir"))) {
-					if (HEventos.getHEventos().getEventosController().getEventoOcorrendo() != null) {
-						if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().isAssistirAtivado()) {
-							if (!HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes().contains(p.getName())) {
-								if (!HEventos.getHEventos().getEventosController().getEventoOcorrendo().getCamarotePlayers().contains(p.getName())) {
-									HEventos.getHEventos().getEventosController().getEventoOcorrendo().getCamarotePlayers().add(p.getName());
-									if (HEventos.getHEventos().getEventosController().getEventoOcorrendo().isAberto()) {
-										p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getAguarde());
+					if (HEventos.getHEventos().getEventosController().getEvento() != null) {
+						if (HEventos.getHEventos().getEventosController().getEvento().isAssistirAtivado()) {
+							if (!HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(p.getName())) {
+								if (!HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().contains(p.getName())) {
+									HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().add(p.getName());
+									if (HEventos.getHEventos().getEventosController().getEvento().isAberto()) {
+										p.teleport(HEventos.getHEventos().getEventosController().getEvento().getAguarde());
 									} else {
-										p.teleport(HEventos.getHEventos().getEventosController().getEventoOcorrendo().getEntrada());
+										p.teleport(HEventos.getHEventos().getEventosController().getEvento().getEntrada());
 									}
-									for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getParticipantes()) {
+									for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
 									}
-									for (final String s : HEventos.getHEventos().getEventosController().getEventoOcorrendo().getCamarotePlayers()) {
+									for (final String s : HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers()) {
 										final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 										pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
 									}
@@ -658,174 +186,6 @@ public class Comandos implements CommandExecutor {
 							}
 						} else {
 							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistirDesativado());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getBatataQuenteOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getMinaMortalOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getSpleefOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getSpleefOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getFrogOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getFrogOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getFrogOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getFrogOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getFrogOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getFrogOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getFrogOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getKillerOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getKillerOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getKillerOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getKillerOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getKillerOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getKillerOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
-							return true;
-						}
-					} else if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo() != null) {
-						if (!HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes().contains(p.getName())) {
-							if (!HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getCamarotePlayers().contains(p.getName())) {
-								HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getCamarotePlayers().add(p.getName());
-								if (HEventos.getHEventos().getEventosController().getPaintballOcorrendo().isAberto()) {
-									p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getAguarde());
-								} else {
-									p.teleport(HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getEntrada());
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getParticipantes()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								for (final String s : HEventos.getHEventos().getEventosController().getPaintballOcorrendo().getCamarotePlayers()) {
-									final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
-									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgAssistindo().replace("$player$", p.getName()));
-								}
-								p.setAllowFlight(true);
-								p.setFlying(true);
-								p.setFlySpeed(1 / 10.0f);
-							} else {
-								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
-								return true;
-							}
-						} else {
-							p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaParticipa());
 							return true;
 						}
 					} else {
@@ -869,10 +229,12 @@ public class Comandos implements CommandExecutor {
 					} else {
 						HEventos.getHEventos().getSqlite().getTOPParticipations(p);
 					}
+				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("iniciarteste"))) {
+
 				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("setentrada"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-							final Evento evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
+							final EventoBase evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
 							evento.getConfig().set("Localizacoes.Entrada", this.getLocationForConfig(p.getLocation()));
 							final File file = new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + args[1] + ".yml");
 							try {
@@ -889,7 +251,7 @@ public class Comandos implements CommandExecutor {
 				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("setsaida"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-							final Evento evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
+							final EventoBase evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
 							evento.getConfig().set("Localizacoes.Saida", this.getLocationForConfig(p.getLocation()));
 							final File file = new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + args[1] + ".yml");
 							try {
@@ -906,7 +268,7 @@ public class Comandos implements CommandExecutor {
 				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("setcamarote"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-							final Evento evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
+							final EventoBase evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
 							evento.getConfig().set("Localizacoes.Camarote", this.getLocationForConfig(p.getLocation()));
 							final File file = new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + args[1] + ".yml");
 							try {
@@ -923,7 +285,7 @@ public class Comandos implements CommandExecutor {
 				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("setaguardando"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-							final Evento evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
+							final EventoBase evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
 							evento.getConfig().set("Localizacoes.Aguardando", this.getLocationForConfig(p.getLocation()));
 							final File file = new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + args[1] + ".yml");
 							try {
@@ -1002,7 +364,6 @@ public class Comandos implements CommandExecutor {
 
 		}
 		return true;
-
 	}
 
 	private String getLocationForConfig(final Location loc) {

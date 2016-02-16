@@ -1,5 +1,6 @@
 Config:
   Nome: "Batata Quente"
+  Evento_Type: "batata_quente"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   PVP: false

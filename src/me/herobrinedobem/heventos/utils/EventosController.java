@@ -8,6 +8,7 @@ import me.herobrinedobem.heventos.eventos.EventoNormal;
 import me.herobrinedobem.heventos.eventos.Killer;
 import me.herobrinedobem.heventos.eventos.MinaMortal;
 import me.herobrinedobem.heventos.eventos.Paintball;
+import me.herobrinedobem.heventos.eventos.Semaforo;
 import me.herobrinedobem.heventos.eventos.Spleef;
 
 public class EventosController {
@@ -35,6 +36,9 @@ public class EventosController {
 				break;
 			case PAINTBALL:
 				this.evento = new Paintball(this.getConfigFile(name));
+				break;
+			case SEMAFORO:
+				this.evento = new Semaforo(this.getConfigFile(name));
 				break;
 			case NORMAL:
 				this.evento = new EventoNormal(this.getConfigFile(name));

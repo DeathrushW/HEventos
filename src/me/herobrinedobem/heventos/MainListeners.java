@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class MainListeners implements Listener {
@@ -64,6 +65,19 @@ public class MainListeners implements Listener {
 					e.getPlayer().sendMessage("§4[Evento] §cLocalizacao 2 da mina setada!");
 					e.setCancelled(true);
 				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onSignChangeEvent(final SignChangeEvent e) {
+		if (e.getPlayer().hasPermission("heventos.admin")) {
+			if (e.getLine(0).equalsIgnoreCase("[Evento]")) {
+				e.setLine(0, "§9[Evento]");
+				e.setLine(1, "§61 Lugar");
+				e.setLine(2, "§62 Lugar");
+				e.setLine(3, "§63 Lugar");
+				e.getPlayer().sendMessage("§4[Evento] §cPlaca criada com sucesso!");
 			}
 		}
 	}

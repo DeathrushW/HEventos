@@ -24,7 +24,7 @@ public class Paintball extends EventoBase {
 
 	public Paintball(final YamlConfiguration config) {
 		super(config);
-		this.listener = new PaintballListener(this);
+		this.listener = new PaintballListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
 		this.pos1 = this.getLocation("Localizacoes.Pos_1");
 		this.pos2 = this.getLocation("Localizacoes.Pos_2");
@@ -84,6 +84,9 @@ public class Paintball extends EventoBase {
 
 	@Override
 	public void cancelEventMethod() {
+		for (final String s : this.getParticipantes()) {
+			this.getPlayerByName(s).getInventory().clear();
+		}
 		this.sendMessageList("Mensagens.Cancelado");
 	}
 

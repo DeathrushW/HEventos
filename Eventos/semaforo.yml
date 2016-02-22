@@ -1,0 +1,71 @@
+Config:
+  Nome: "Semaforo"
+  Evento_Type: "normal"
+  Chamadas: 5
+  Tempo_Entre_As_Chamadas: 30
+  PVP: false
+  VIP: false
+  Assistir_Ativado: true
+  Assistir_Invisivel: true
+  Contar_Vitoria: true
+  Contar_Participacao: true
+  Tempo_Troca: 20
+  
+Localizacoes:
+  Saida: "world;-110;92;1482"
+  Camarote: "world;-839;8;1109"
+  Entrada: "world;-839;8;1109"
+  Aguardando: "world;-1535;7;1706"
+
+Premios:
+  Money: 5000.0
+
+Mensagens:
+  Aberto:
+    - "  "
+    - "&9[Semaforo] &fO evento &6Semaforo &festa aberto!"
+    - "&9[Semaforo] &fPara participar digite &6/evento entrar"
+    - "&9[Semaforo] &fEsse evento e pvp &a[OFF]"
+    - "&9[Semaforo] &fRisco de morte &c[ON]"
+    - "  "
+  Aberto_VIP:
+    - "  "
+    - "&9[Semaforo VIP] &fO evento &6Semaforo VIP &festa aberto!"
+    - "&9[Semaforo VIP] &fPara participar digite &6/evento entrar"
+    - "&9[Semaforo VIP] &fEsse evento e pvp &a[OFF]"
+    - "&9[Semaforo VIP] &fRisco de morte &c[ON]"
+    - "  "
+  Iniciando:
+    - "  "
+    - "&9[Semaforo] &fEvento fechado, iniciando!"
+    - "&9[Semaforo] &fBoa sorte aos participantes!"
+    - "  "
+  Vencedor:
+    - "  "
+    - "&9[Semaforo] &fO evento &6Semaforo &ffoi finalizado!"
+    - "&9[Semaforo] &fO vencedor foi &6$player$&f!"
+    - "&9[Semaforo] &fPremio pago e jogadores teleportados para a saida!"
+    - "  "
+  Sem_Vencedor:
+    - "  "
+    - "&4[Semaforo] &cO evento Semaforo foi finalizado!"
+    - "&4[Semaforo] &cNao houve vencedores!"
+    - "  "
+  Cancelado:
+    - "  "
+    - "&4[Semaforo] &cEvento Semaforo foi cancelado!"
+    - "  "
+  Eliminado:
+    - "&9[Semaforo] &fO jogador &6$player$ &ffoi eliminado!"
+  Vermelho:
+    - "  "
+    - "&9[Semaforo] &fO sinal esta &4vermelho &fpare de andar!"
+    - "  "
+  Amarelo:
+    - "  "
+    - "&9[Semaforo] &fO sinal esta &eamarelo &ftome cuidado!"
+    - "  "
+  Verde :
+    - "  "
+    - "&9[Semaforo] &fO sinal esta &averde &fpode andar!"
+    - "  "

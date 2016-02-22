@@ -16,10 +16,6 @@ import me.herobrinedobem.heventos.utils.EventoType;
 
 public class Comandos implements CommandExecutor {
 
-	public static void main(final String[] args) {
-		System.out.print('a' > 'b');
-	}
-
 	private final HEventos instance;
 
 	public Comandos(final HEventos instance) {
@@ -41,12 +37,12 @@ public class Comandos implements CommandExecutor {
 								if (HEventos.getHEventos().getEventosController().getEvento().isVip()) {
 									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
 										if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
-											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
-										}
-										if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) {
+											if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
+												HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+											}
+										} else if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) {
 											if (!Comandos.isInventoryEmpty(p)) {
 												p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
-												return false;
 											}
 										}
 										HEventos.getHEventos().getEventosController().getEvento().getParticipantes().add(p.getName());
@@ -62,7 +58,13 @@ public class Comandos implements CommandExecutor {
 									}
 								} else {
 									if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
-										HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+										if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
+											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+										}
+									} else if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) {
+										if (!Comandos.isInventoryEmpty(p)) {
+											p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
+										}
 									}
 									HEventos.getHEventos().getEventosController().getEvento().getParticipantes().add(p.getName());
 									p.teleport(HEventos.getHEventos().getEventosController().getEvento().getAguarde());

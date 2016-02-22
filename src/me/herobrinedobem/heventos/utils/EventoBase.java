@@ -58,20 +58,19 @@ public class EventoBase implements EventoBaseImplements {
 			}
 		}, 0, this.tempo * 20L);
 
-		if (this.assistirInvisivel) {
-			this.id2 = scheduler.scheduleSyncRepeatingTask(HEventos.getHEventos(), new Runnable() {
-				@Override
-				public void run() {
+		this.id2 = scheduler.scheduleSyncRepeatingTask(HEventos.getHEventos(), new Runnable() {
+			@Override
+			public void run() {
+				if (EventoBase.this.isAssistirInvisivel()) {
 					for (final String s : EventoBase.this.participantes) {
 						for (final String sa : EventoBase.this.camarotePlayers) {
 							EventoBase.this.getPlayerByName(s).hidePlayer(EventoBase.this.getPlayerByName(sa));
 						}
 					}
-					EventoBase.this.scheduledMethod();
 				}
-			}, 0, 20L);
-		}
-
+				EventoBase.this.scheduledMethod();
+			}
+		}, 0, 20L);
 	}
 
 	@Override

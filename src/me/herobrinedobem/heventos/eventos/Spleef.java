@@ -22,7 +22,7 @@ public class Spleef extends EventoBase {
 	public Spleef(final YamlConfiguration config) {
 		super(config);
 		System.out.println("a");
-		this.listener = new SpleefListener(this);
+		this.listener = new SpleefListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
 		this.regenerarChao = config.getBoolean("Config.Regenerar_Chao");
 		this.tempoChaoRegenera = config.getInt("Config.Tempo_Chao_Regenera");

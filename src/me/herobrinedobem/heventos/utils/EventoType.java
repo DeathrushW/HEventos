@@ -2,7 +2,14 @@ package me.herobrinedobem.heventos.utils;
 
 public enum EventoType {
 
-	BATATA_QUENTE, FROG, KILLER, MINA_MORTAL, SPLEEF, PAINTBALL, NORMAL;
+	BATATA_QUENTE,
+	FROG,
+	KILLER,
+	MINA_MORTAL,
+	SPLEEF,
+	PAINTBALL,
+	SEMAFORO,
+	NORMAL;
 
 	public static EventoType getEventoType(final String type) {
 		switch (type) {
@@ -18,6 +25,8 @@ public enum EventoType {
 				return EventoType.SPLEEF;
 			case "paintball":
 				return EventoType.PAINTBALL;
+			case "semaforo":
+				return EventoType.SEMAFORO;
 			case "normal":
 				return EventoType.NORMAL;
 			default:

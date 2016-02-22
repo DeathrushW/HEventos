@@ -13,7 +13,7 @@ public class EventoNormal extends EventoBase {
 
 	public EventoNormal(final YamlConfiguration config) {
 		super(config);
-		this.listener = new EventoNormalListener(this);
+		this.listener = new EventoNormalListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
 	}
 

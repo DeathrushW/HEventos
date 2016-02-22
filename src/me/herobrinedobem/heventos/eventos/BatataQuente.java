@@ -25,7 +25,7 @@ public class BatataQuente extends EventoBase {
 
 	public BatataQuente(final YamlConfiguration config) {
 		super(config);
-		this.listener = new BatataQuenteListener(this);
+		this.listener = new BatataQuenteListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
 		this.tempoBatata = config.getInt("Config.Tempo_Batata_Explodir");
 		this.vencedor = null;

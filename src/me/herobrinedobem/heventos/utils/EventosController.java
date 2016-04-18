@@ -4,6 +4,7 @@ import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.eventos.BatataQuente;
+import me.herobrinedobem.heventos.eventos.BowSpleef;
 import me.herobrinedobem.heventos.eventos.EventoNormal;
 import me.herobrinedobem.heventos.eventos.Killer;
 import me.herobrinedobem.heventos.eventos.MinaMortal;
@@ -24,6 +25,9 @@ public class EventosController {
 		switch (type) {
 			case SPLEEF:
 				this.evento = new Spleef(this.getConfigFile(name));
+				break;
+			case BOW_SPLEEF:
+				this.evento = new BowSpleef(this.getConfigFile(name));
 				break;
 			case BATATA_QUENTE:
 				this.evento = new BatataQuente(this.getConfigFile(name));

@@ -67,6 +67,9 @@ public class HEventos extends JavaPlugin {
 				if (!new File(this.getDataFolder() + File.separator + "Eventos" + File.separator + "semaforo.yml").exists()) {
 					this.saveResource("Eventos" + File.separator + "semaforo.yml", false);
 				}
+				if (!new File(this.getDataFolder() + File.separator + "Eventos" + File.separator + "buildbattle.yml").exists()) {
+					this.saveResource("Eventos" + File.separator + "buildbattle.yml", false);
+				}
 				Bukkit.getConsoleSender().sendMessage("§9[HEventos] §fConfigs de exemplos criadas!");
 			}
 			if (this.getConfig().getBoolean("MySQL.Ativado") == false) {

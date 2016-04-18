@@ -1,6 +1,8 @@
 package me.herobrinedobem.heventos.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import me.herobrinedobem.heventos.HEventos;
 
 public class EventoVerifyHour extends Thread {
@@ -17,6 +19,13 @@ public class EventoVerifyHour extends Thread {
 						HEventos.getHEventos().getEventosController().setEvento(s.split("-")[1], EventoType.getEventoType(s.split("-")[1]));
 						HEventos.getHEventos().getEventosController().getEvento().run();
 					}
+				} else if (s.startsWith(String.valueOf(cal.get(Calendar.DAY_OF_WEEK)))) {
+					if (s.contains(hora + ":" + minutos)) {
+						if (HEventos.getHEventos().getEventosController().getEvento() == null) {
+							HEventos.getHEventos().getEventosController().setEvento(s.split("-")[1], EventoType.getEventoType(s.split("-")[1]));
+							HEventos.getHEventos().getEventosController().getEvento().run();
+						}
+					}
 				}
 			}
 			try {
@@ -25,6 +34,11 @@ public class EventoVerifyHour extends Thread {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public String getData() {
+		final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+		return sdf.format(new Date());
 	}
 
 }

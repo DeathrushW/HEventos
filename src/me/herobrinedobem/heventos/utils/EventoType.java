@@ -7,9 +7,11 @@ public enum EventoType {
 	KILLER,
 	MINA_MORTAL,
 	SPLEEF,
+	BOW_SPLEEF,
 	PAINTBALL,
 	SEMAFORO,
-	NORMAL;
+	NORMAL,
+	BUILD_BATTLE;
 
 	public static EventoType getEventoType(final String type) {
 		switch (type) {
@@ -23,12 +25,16 @@ public enum EventoType {
 				return EventoType.MINA_MORTAL;
 			case "spleef":
 				return EventoType.SPLEEF;
+			case "bowspleef":
+				return EventoType.BOW_SPLEEF;
 			case "paintball":
 				return EventoType.PAINTBALL;
 			case "semaforo":
 				return EventoType.SEMAFORO;
 			case "normal":
 				return EventoType.NORMAL;
+			case "buildbattle":
+				return EventoType.BUILD_BATTLE;
 			default:
 				return EventoType.NORMAL;
 		}

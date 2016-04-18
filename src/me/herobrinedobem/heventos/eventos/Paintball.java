@@ -17,139 +17,167 @@ import me.herobrinedobem.heventos.utils.EventoBase;
 public class Paintball extends EventoBase {
 
 	private final PaintballListener listener;
-	private final ArrayList<String> team1 = new ArrayList<String>();
-	private final ArrayList<String> team2 = new ArrayList<String>();
-	private final ArrayList<String> vencedores = new ArrayList<String>();
-	private Location pos1, pos2;
+	private final ArrayList<String> time1 = new ArrayList<>();
+	private final ArrayList<String> time2 = new ArrayList<>();
+	private Location locTime1, locTime2;
 
 	public Paintball(final YamlConfiguration config) {
 		super(config);
 		this.listener = new PaintballListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
-		this.pos1 = this.getLocation("Localizacoes.Pos_1");
-		this.pos2 = this.getLocation("Localizacoes.Pos_2");
-		this.team1.clear();
-		this.team2.clear();
+		this.locTime1 = this.getLocation("Localizacoes.Pos_1");
+		this.locTime2 = this.getLocation("Localizacoes.Pos_2");
 	}
 
 	@Override
-	public void startEventMethod() {
-		final ItemStack arco = new ItemStack(Material.BOW, 1);
-		arco.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-		boolean team1Ja = false;
-		for (final String p : Paintball.this.getParticipantes()) {
-			Paintball.this.getPlayerByName(p).getInventory().addItem(arco);
-			Paintball.this.getPlayerByName(p).getInventory().addItem(new ItemStack(Material.ARROW, 64));
-			if (team1Ja == false) {
-				Paintball.this.team1.add(p);
-				Paintball.this.darKitPaintball(Paintball.this.getPlayerByName(p), 2);
-				Paintball.this.getPlayerByName(p).teleport(Paintball.this.pos1);
-				team1Ja = true;
+	public void startEvent() {
+		if (this.getChamadascurrent() >= 1) {
+			this.setChamadascurrent(this.getChamadascurrent() - 1);
+			this.setOcorrendo(true);
+			this.setAberto(true);
+			if (this.isVip()) {
+				this.sendMessageList("Mensagens.Aberto_VIP");
 			} else {
-				Paintball.this.team2.add(p);
-				Paintball.this.darKitPaintball(Paintball.this.getPlayerByName(p), 1);
-				Paintball.this.getPlayerByName(p).teleport(Paintball.this.pos2);
-				team1Ja = false;
+				this.sendMessageList("Mensagens.Aberto");
 			}
-		}
-		for (final String s : Paintball.this.getConfig().getStringList("Mensagens.Times")) {
-			final StringBuilder time1Builder = new StringBuilder();
-			for (final String p1 : Paintball.this.team1) {
-				time1Builder.append("§6" + p1 + " ");
+		} else if (this.getChamadascurrent() == 0) {
+			if (this.getParticipantes().size() >= 1) {
+				this.setAberto(false);
+				this.setParte1(true);
+				for (final String sa : this.getCamarotePlayers()) {
+					this.getPlayerByName(sa).teleport(this.getCamarote());
+				}
+				for (final String p : this.getParticipantes()) {
+					if (this.isContarParticipacao()) {
+						if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
+							HEventos.getHEventos().getMysql().addPartipationPoint(p);
+						} else {
+							HEventos.getHEventos().getSqlite().addPartipationPoint(p);
+						}
+					}
+				}
+				this.sendMessageList("Mensagens.Iniciando");
+				this.separarTimes();
+				this.darKit();
+			} else {
+				this.resetEvent();
+				this.sendMessageList("Mensagens.Cancelado");
+				HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId());
 			}
-			final StringBuilder time2Builder = new StringBuilder();
-			for (final String p2 : Paintball.this.team2) {
-				time2Builder.append("§6" + p2 + " ");
-			}
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$time1$", time1Builder.toString()).replace("$time2$", time2Builder.toString()));
 		}
 	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((Paintball.this.isAberto() == false) && (Paintball.this.isOcorrendo() == true)) {
-			if (Paintball.this.getParticipantes().size() > 0) {
-				if (Paintball.this.team1.size() <= 0) {
-					Paintball.this.encerrarEventoComVencedores(Paintball.this.team2);
-				}
-				if (Paintball.this.team2.size() <= 0) {
-					Paintball.this.encerrarEventoComVencedores(Paintball.this.team1);
-				}
-			} else {
-				Paintball.this.encerrarEventoSemVencedores();
+		if ((this.isOcorrendo() == true) && (this.isAberto() == false)) {
+			if (this.getParticipantes().size() <= 0) {
+				this.sendMessageList("Mensagens.Sem_Vencedor");
+				this.stopEvent();
 			}
-			Paintball.this.pos1.getWorld().setTime(17000);
+			if ((this.time1.size() > 0) && (this.time2.size() <= 0)) {
+				final StringBuilder venc = new StringBuilder();
+				for (final String s : this.time1) {
+					venc.append(s + " ");
+				}
+				for (final String s : this.getConfig().getStringList("Mensagens.Vencedor")) {
+					HEventos.getHEventos().getServer().broadcastMessage(s.replaceAll("&", "§").replace("$players$", venc.toString()));
+				}
+				this.stopEvent();
+			} else if ((this.time2.size() > 0) && (this.time1.size() <= 0)) {
+				final StringBuilder venc = new StringBuilder();
+				for (final String s : this.time2) {
+					venc.append(s + " ");
+				}
+				for (final String s : this.getConfig().getStringList("Mensagens.Vencedor")) {
+					HEventos.getHEventos().getServer().broadcastMessage(s.replaceAll("&", "§").replace("$players$", venc.toString()));
+				}
+				this.stopEvent();
+			}
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void cancelEventMethod() {
 		for (final String s : this.getParticipantes()) {
+			this.getPlayerByName(s).getInventory().setHelmet(null);
+			this.getPlayerByName(s).getInventory().setChestplate(null);
+			this.getPlayerByName(s).getInventory().setLeggings(null);
+			this.getPlayerByName(s).getInventory().setBoots(null);
 			this.getPlayerByName(s).getInventory().clear();
+			this.getPlayerByName(s).updateInventory();
 		}
 		this.sendMessageList("Mensagens.Cancelado");
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void stopEventMethod() {
+		for (final String s : this.getParticipantes()) {
+			this.getPlayerByName(s).getInventory().setHelmet(null);
+			this.getPlayerByName(s).getInventory().setChestplate(null);
+			this.getPlayerByName(s).getInventory().setLeggings(null);
+			this.getPlayerByName(s).getInventory().setBoots(null);
+			this.getPlayerByName(s).getInventory().clear();
+			this.getPlayerByName(s).updateInventory();
+		}
 	}
 
 	@Override
 	public void resetEvent() {
 		super.resetEvent();
-		this.pos1 = this.getLocation("Localizacoes.Pos_1");
-		this.pos2 = this.getLocation("Localizacoes.Pos_2");
-		this.team1.clear();
-		this.team2.clear();
+		this.locTime1 = this.getLocation("Localizacoes.Pos_1");
+		this.locTime2 = this.getLocation("Localizacoes.Pos_2");
+		this.time1.clear();
+		this.time2.clear();
 		BukkitEventHelper.unregisterEvents(this.listener, HEventos.getHEventos());
 	}
 
-	public void encerrarEventoSemVencedores() {
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId());
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId2());
+	private void separarTimes() {
+		boolean selecionado = false;
 		for (final String s : this.getParticipantes()) {
-			this.resetarInventario(this.getPlayerByName(s));
-			this.getPlayerByName(s).teleport(this.getSaida());
+			if (selecionado == false) {
+				this.time1.add(s);
+				this.darUniforme(this.getPlayerByName(s), 1);
+				this.getPlayerByName(s).teleport(this.locTime1);
+				selecionado = true;
+			} else {
+				this.time2.add(s);
+				this.darUniforme(this.getPlayerByName(s), 2);
+				this.getPlayerByName(s).teleport(this.locTime2);
+				selecionado = false;
+			}
 		}
-		for (final String s : this.getCamarotePlayers()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
+
+		final StringBuilder time1MSG = new StringBuilder();
+		final StringBuilder time2MSG = new StringBuilder();
+
+		for (final String s : this.time1) {
+			time1MSG.append(s + " ");
 		}
-		this.sendMessageListVencedor("Mensagens.Sem_Vencedor");
-		this.resetEvent();
+
+		for (final String s : this.time2) {
+			time2MSG.append(s + " ");
+		}
+
+		for (final String s : this.getConfig().getStringList("Mensagens.Times")) {
+			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$time1$", time1MSG.toString()).replace("$time2$", time2MSG.toString()));
+
+		}
 	}
 
-	public void encerrarEventoComVencedores(final ArrayList<String> team) {
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId());
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId2());
-		final StringBuilder time1Builder = new StringBuilder();
-		for (final String p1 : team) {
-			this.resetarInventario(this.getPlayerByName(p1));
-			HEventos.getHEventos().getEconomy().depositPlayer(p1, this.getMoney());
-			time1Builder.append("§6" + p1 + " ");
-		}
-		for (final String s : this.getConfig().getStringList("Mensagens.Vencedor")) {
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$players$", time1Builder.toString()));
-		}
+	@SuppressWarnings("deprecation")
+	private void darKit() {
+		final ItemStack arco = new ItemStack(Material.BOW, 1);
+		arco.addEnchantment(Enchantment.ARROW_INFINITE, 1);
 		for (final String s : this.getParticipantes()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		for (final String s : this.getCamarotePlayers()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		this.resetEvent();
-	}
-
-	private void sendMessageListVencedor(final String list) {
-		for (final String s : this.getConfig().getStringList(list)) {
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", this.vencedores.get(0)));
+			this.getPlayerByName(s).getInventory().addItem(arco);
+			this.getPlayerByName(s).getInventory().addItem(new ItemStack(Material.ARROW, 64));
+			this.getPlayerByName(s).updateInventory();
 		}
 	}
 
-	private void resetarInventario(final Player p) {
-		p.getInventory().clear();
-		p.getInventory().setHelmet(new ItemStack(Material.AIR));
-		p.getInventory().setChestplate(new ItemStack(Material.AIR));
-		p.getInventory().setLeggings(new ItemStack(Material.AIR));
-		p.getInventory().setBoots(new ItemStack(Material.AIR));
-	}
-
-	private void darKitPaintball(final Player player, final int time) {
+	private void darUniforme(final Player player, final int time) {
 		if (time == 1) {
 			final ItemStack lhelmet = new ItemStack(Material.LEATHER_HELMET, 1);
 			final LeatherArmorMeta lam = (LeatherArmorMeta) lhelmet.getItemMeta();
@@ -204,37 +232,28 @@ public class Paintball extends EventoBase {
 		}
 	}
 
-	public Location getPos1() {
-		return this.pos1;
+	public Location getLocTime1() {
+		return this.locTime1;
 	}
 
-	public void setPos1(final Location pos1) {
-		this.pos1 = pos1;
+	public void setLocTime1(final Location locTime1) {
+		this.locTime1 = locTime1;
 	}
 
-	public Location getPos2() {
-		return this.pos2;
+	public Location getLocTime2() {
+		return this.locTime2;
 	}
 
-	public void setPos2(final Location pos2) {
-		this.pos2 = pos2;
+	public void setLocTime2(final Location locTime2) {
+		this.locTime2 = locTime2;
 	}
 
-	public ArrayList<String> getTeam1() {
-		return this.team1;
+	public ArrayList<String> getTime1() {
+		return this.time1;
 	}
 
-	public ArrayList<String> getTeam2() {
-		return this.team2;
-	}
-
-	@Override
-	public ArrayList<String> getVencedores() {
-		return this.vencedores;
-	}
-
-	public PaintballListener getListener() {
-		return this.listener;
+	public ArrayList<String> getTime2() {
+		return this.time2;
 	}
 
 }

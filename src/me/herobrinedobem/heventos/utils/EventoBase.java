@@ -1,6 +1,7 @@
 package me.herobrinedobem.heventos.utils;
 
 import java.util.ArrayList;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -172,6 +173,9 @@ public class EventoBase implements EventoBaseImplements {
 		this.aberto = false;
 		this.ocorrendo = false;
 		this.parte1 = false;
+		for (final String s : this.participantes) {
+			this.getPlayerByName(s).setGameMode(GameMode.SURVIVAL);
+		}
 		this.participantes.clear();
 		this.chamadascurrent = this.chamadas;
 		for (final String s : this.camarotePlayers) {
@@ -185,9 +189,6 @@ public class EventoBase implements EventoBaseImplements {
 			}
 		}
 		this.camarotePlayers.clear();
-		for (final Player p : HEventos.getHEventos().getServer().getOnlinePlayers()) {
-			p.setScoreboard(HEventos.getHEventos().getServer().getScoreboardManager().getMainScoreboard());
-		}
 		HEventos.getHEventos().getEventosController().setEvento(null);
 		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.id);
 		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.id2);

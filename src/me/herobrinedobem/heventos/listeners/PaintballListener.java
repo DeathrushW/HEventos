@@ -2,6 +2,7 @@ package me.herobrinedobem.heventos.listeners;
 
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import me.herobrinedobem.heventos.HEventos;
@@ -11,6 +12,7 @@ import me.herobrinedobem.heventos.utils.EventoBaseListener;
 public class PaintballListener extends EventoBaseListener {
 
 	@Override
+	@EventHandler
 	public void onEntityDamageByEntityEvent(final EntityDamageByEntityEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if ((HEventos.getHEventos().getEventosController().getEvento().isAberto() == false) && (HEventos.getHEventos().getEventosController().getEvento().isOcorrendo() == true)) {
@@ -33,30 +35,31 @@ public class PaintballListener extends EventoBaseListener {
 						boolean matou = false;
 						final Paintball paintball = (Paintball) HEventos.getHEventos().getEventosController().getEvento();
 						if (HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(atingido.getName()) && HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(atirou.getName())) {
-							if (paintball.getTeam1().contains(atirou.getName())) {
-								if (paintball.getTeam1().contains(atingido.getName())) {
+							if (paintball.getTime1().contains(atirou.getName())) {
+								if (paintball.getTime1().contains(atingido.getName())) {
 									matou = false;
 								} else {
 									matou = true;
 								}
-							} else if (paintball.getTeam2().contains(atirou.getName())) {
-								if (paintball.getTeam2().contains(atingido.getName())) {
+							} else if (paintball.getTime2().contains(atirou.getName())) {
+								if (paintball.getTime2().contains(atingido.getName())) {
 									matou = false;
 								} else {
 									matou = true;
 								}
 							}
 							if (matou) {
-								if (paintball.getTeam2().contains(atingido.getName())) {
-									paintball.getTeam2().remove(atingido.getName());
+								if (paintball.getTime2().contains(atingido.getName())) {
+									paintball.getTime2().remove(atingido.getName());
 								} else {
-									paintball.getTeam1().remove(atingido.getName());
+									paintball.getTime1().remove(atingido.getName());
 								}
 								atingido.getInventory().setHelmet(null);
 								atingido.getInventory().setChestplate(null);
 								atingido.getInventory().setLeggings(null);
 								atingido.getInventory().setBoots(null);
 								atingido.getInventory().clear();
+								HEventos.getHEventos().getEconomy().depositPlayer(atirou.getName(), paintball.getConfig().getDouble("Premios.Money_Kill"));
 								atingido.teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
 								HEventos.getHEventos().getEventosController().getEvento().getParticipantes().remove(atingido.getName());
 								atingido.sendMessage(HEventos.getHEventos().getEventosController().getEvento().getConfig().getString("Mensagens.Eliminado").replace("&", "§").replace("$player$", atirou.getName()));
@@ -72,6 +75,7 @@ public class PaintballListener extends EventoBaseListener {
 	}
 
 	@Override
+	@EventHandler
 	public void onPlayerQuitEvent(final PlayerQuitEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if (HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(e.getPlayer().getName())) {

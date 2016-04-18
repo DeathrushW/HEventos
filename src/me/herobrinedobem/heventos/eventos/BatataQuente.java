@@ -49,6 +49,25 @@ public class BatataQuente extends EventoBase {
 	@Override
 	public void scheduledMethod() {
 		if ((BatataQuente.this.isOcorrendo() == true) && (BatataQuente.this.isAberto() == false) && (BatataQuente.this.playerComBatata != null)) {
+			if (BatataQuente.this.getParticipantes().size() <= 1) {
+				Player p = null;
+				for (final String s : BatataQuente.this.getParticipantes()) {
+					p = BatataQuente.this.getPlayerByName(s);
+				}
+				for (final String sa : BatataQuente.this.getConfig().getStringList("Premios.Itens")) {
+					HEventos.getHEventos().getServer().dispatchCommand(HEventos.getHEventos().getServer().getConsoleSender(), sa.replace("$player$", p.getName()));
+				}
+				HEventos.getHEventos().getEconomy().depositPlayer(p.getName(), BatataQuente.this.getMoney());
+				if (BatataQuente.this.isContarVitoria()) {
+					if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
+						HEventos.getHEventos().getMysql().addWinnerPoint(p.getName());
+					} else {
+						HEventos.getHEventos().getSqlite().addWinnerPoint(p.getName());
+					}
+				}
+				BatataQuente.this.stopEvent();
+			}
+
 			if (BatataQuente.this.tempoBatataCurrent > 0) {
 				BatataQuente.this.tempoBatataCurrent--;
 				final Location loc = BatataQuente.this.playerComBatata.getLocation();
@@ -90,24 +109,6 @@ public class BatataQuente extends EventoBase {
 				}
 				BatataQuente.this.tempoBatataCurrent = BatataQuente.this.tempoBatata;
 			}
-			if (BatataQuente.this.getParticipantes().size() == 1) {
-				Player p = null;
-				for (final String s : BatataQuente.this.getParticipantes()) {
-					p = BatataQuente.this.getPlayerByName(s);
-				}
-				for (final String sa : BatataQuente.this.getConfig().getStringList("Premios.Itens")) {
-					HEventos.getHEventos().getServer().dispatchCommand(HEventos.getHEventos().getServer().getConsoleSender(), sa.replace("$player$", p.getName()));
-				}
-				HEventos.getHEventos().getEconomy().depositPlayer(p.getName(), BatataQuente.this.getMoney());
-				if (BatataQuente.this.isContarVitoria()) {
-					if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-						HEventos.getHEventos().getMysql().addWinnerPoint(p.getName());
-					} else {
-						HEventos.getHEventos().getSqlite().addWinnerPoint(p.getName());
-					}
-				}
-				BatataQuente.this.stopEvent();
-			}
 		}
 	}
 
@@ -132,8 +133,12 @@ public class BatataQuente extends EventoBase {
 	}
 
 	private void sendMessageListVencedor(final String list) {
+		Player p = null;
+		for (final String s : BatataQuente.this.getParticipantes()) {
+			p = BatataQuente.this.getPlayerByName(s);
+		}
 		for (final String s : this.getConfig().getStringList(list)) {
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", this.getVencedores().get(0)));
+			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", p.getName()));
 		}
 	}
 

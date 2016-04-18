@@ -40,7 +40,7 @@ public class MainListeners implements Listener {
 					e.setCancelled(true);
 				}
 			}
-		} else if ((e.getPlayer().getItemInHand().getType() == Material.IRON_AXE) && e.getPlayer().getItemInHand().hasItemMeta() && e.getPlayer().getItemInHand().getItemMeta().hasDisplayName() && e.getPlayer().getItemInHand().getItemMeta().getDisplayName().contains("Evento Mina Mortal")) {
+		} else if ((e.getPlayer().getItemInHand().getType() == Material.IRON_AXE) && e.getPlayer().getItemInHand().hasItemMeta() && e.getPlayer().getItemInHand().getItemMeta().hasDisplayName() && e.getPlayer().getItemInHand().getItemMeta().getDisplayName().contains("Evento MinaMortal")) {
 			if (e.getPlayer().hasPermission("heventos.admin")) {
 				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/minamortal.yml");
@@ -63,6 +63,32 @@ public class MainListeners implements Listener {
 						e1.printStackTrace();
 					}
 					e.getPlayer().sendMessage("§4[Evento] §cLocalizacao 2 da mina setada!");
+					e.setCancelled(true);
+				}
+			}
+		} else if ((e.getPlayer().getItemInHand().getType() == Material.IRON_AXE) && e.getPlayer().getItemInHand().hasItemMeta() && e.getPlayer().getItemInHand().getItemMeta().hasDisplayName() && e.getPlayer().getItemInHand().getItemMeta().getDisplayName().contains("BowSpleef")) {
+			if (e.getPlayer().hasPermission("heventos.admin")) {
+				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/bowspleef.yml");
+					final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
+					configEvento.set("Localizacoes.Chao_1", e.getClickedBlock().getWorld().getName() + ";" + (int) e.getClickedBlock().getLocation().getX() + ";" + (int) e.getClickedBlock().getLocation().getY() + ";" + (int) e.getClickedBlock().getLocation().getZ());
+					try {
+						configEvento.save(new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + "bowspleef.yml"));
+					} catch (final IOException e1) {
+						e1.printStackTrace();
+					}
+					e.getPlayer().sendMessage("§4[Evento] §cLocalizacao 1 do bowspleef setada!");
+					e.setCancelled(true);
+				} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+					final File fileEvento = new File(HEventos.getHEventos().getDataFolder().getAbsolutePath() + "/Eventos/bowspleef.yml");
+					final YamlConfiguration configEvento = YamlConfiguration.loadConfiguration(fileEvento);
+					configEvento.set("Localizacoes.Chao_2", e.getClickedBlock().getWorld().getName() + ";" + (int) e.getClickedBlock().getLocation().getX() + ";" + (int) e.getClickedBlock().getLocation().getY() + ";" + (int) e.getClickedBlock().getLocation().getZ());
+					try {
+						configEvento.save(new File(HEventos.getHEventos().getDataFolder() + File.separator + "Eventos" + File.separator + "bowspleef.yml"));
+					} catch (final IOException e1) {
+						e1.printStackTrace();
+					}
+					e.getPlayer().sendMessage("§4[Evento] §cLocalizacao 2 do bowspleef setada!");
 					e.setCancelled(true);
 				}
 			}

@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.EventoNormal;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class EventoNormalListener extends EventoBaseListener {
 

@@ -7,8 +7,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.Semaforo;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class SemaforoListener extends EventoBaseListener {
 

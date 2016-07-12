@@ -1,4 +1,4 @@
-package me.herobrinedobem.heventos.utils;
+package me.herobrinedobem.heventos.api;
 
 import java.util.ArrayList;
 import org.bukkit.GameMode;
@@ -7,10 +7,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.listeners.EventoStopEvent;
+import me.herobrinedobem.heventos.utils.EventoCancellType;
 
 public class EventoBase implements EventoBaseImplements {
 
 	private final EventoType eventoType;
+	private String horarioStart;
 	private final ArrayList<String> participantes = new ArrayList<String>();
 	private boolean ocorrendo, aberto, parte1, vip, assistirAtivado,
 			assistirInvisivel, pvp, contarVitoria, contarParticipacao;
@@ -136,9 +139,20 @@ public class EventoBase implements EventoBaseImplements {
 	@Override
 	public void scheduledMethod() {
 	}
+	
+	@Override
+	public void externalPluginStart() {
+		if(HEventos.getHEventos().getEventosController().getEvento() == null){
+			HEventos.getHEventos().getEventosController().setEvento(this);
+			HEventos.getHEventos().getEventosController().getEvento().setVip(isVip());
+			HEventos.getHEventos().getEventosController().getEvento().run();
+		}
+	}
 
 	@Override
 	public void stopEvent() {
+		EventoStopEvent event = new EventoStopEvent(HEventos.getHEventos().getEventosController().getEvento(), EventoCancellType.FINISHED);
+		HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 		for (final String s : this.participantes) {
 			this.getPlayerByName(s).teleport(this.getSaida());
 		}
@@ -395,4 +409,12 @@ public class EventoBase implements EventoBaseImplements {
 		return this.camarotePlayers;
 	}
 
+	public String getHorarioStart() {
+		return horarioStart;
+	}
+	
+	public void setHorarioStart(String horarioStart) {
+		this.horarioStart = horarioStart;
+	}
+	
 }

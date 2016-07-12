@@ -147,9 +147,9 @@ public class SQLite {
 
 	public void addWinnerPoint(final String player) {
 		if (this.hasPlayer(player)) {
-			HEventos.getHEventos().getMysql().updateWins(player, 1);
+			HEventos.getHEventos().getSqlite().updateWins(player, 1);
 		} else {
-			HEventos.getHEventos().getMysql().addNew(player, 1, 1);
+			HEventos.getHEventos().getSqlite().addNew(player, 1, 1);
 		}
 	}
 

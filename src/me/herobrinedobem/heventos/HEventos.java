@@ -1,13 +1,17 @@
 package me.herobrinedobem.heventos;
 
 import java.io.File;
+import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.listeners.EventoStopEvent;
 import me.herobrinedobem.heventos.databases.MySQL;
 import me.herobrinedobem.heventos.databases.SQLite;
 import me.herobrinedobem.heventos.utils.ConfigUtil;
+import me.herobrinedobem.heventos.utils.EventoCancellType;
 import me.herobrinedobem.heventos.utils.EventoVerifyHour;
 import me.herobrinedobem.heventos.utils.EventosController;
 import net.milkbowl.vault.economy.Economy;
@@ -15,6 +19,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class HEventos extends JavaPlugin {
 
+	private ArrayList<EventoBase> externalEventos = new ArrayList<>();
 	private SimpleClans sc;
 	private EventosController eventosController;
 	private MySQL mysql;
@@ -67,9 +72,6 @@ public class HEventos extends JavaPlugin {
 				if (!new File(this.getDataFolder() + File.separator + "Eventos" + File.separator + "semaforo.yml").exists()) {
 					this.saveResource("Eventos" + File.separator + "semaforo.yml", false);
 				}
-				if (!new File(this.getDataFolder() + File.separator + "Eventos" + File.separator + "buildbattle.yml").exists()) {
-					this.saveResource("Eventos" + File.separator + "buildbattle.yml", false);
-				}
 				Bukkit.getConsoleSender().sendMessage("§9[HEventos] §fConfigs de exemplos criadas!");
 			}
 			if (this.getConfig().getBoolean("MySQL.Ativado") == false) {
@@ -104,6 +106,8 @@ public class HEventos extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if (this.eventosController.getEvento() != null) {
+			EventoStopEvent event = new EventoStopEvent(HEventos.getHEventos().getEventosController().getEvento(), EventoCancellType.SERVER_STOPED);
+			HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 			this.eventosController.getEvento().cancelEvent();
 		}
 		Bukkit.getConsoleSender().sendMessage("§9[HEventos] §fPlugin Desabilitado - (Versao §9" + this.getDescription().getVersion() + "§f)");
@@ -151,6 +155,10 @@ public class HEventos extends JavaPlugin {
 
 	public SimpleClans getSc() {
 		return this.sc;
+	}
+	
+	public ArrayList<EventoBase> getExternalEventos() {
+		return externalEventos;
 	}
 
 }

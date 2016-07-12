@@ -2,9 +2,9 @@ package me.herobrinedobem.heventos.eventos;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBase;
 import me.herobrinedobem.heventos.listeners.SemaforoListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
-import me.herobrinedobem.heventos.utils.EventoBase;
 
 public class Semaforo extends EventoBase {
 

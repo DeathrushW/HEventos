@@ -1,4 +1,4 @@
-package me.herobrinedobem.heventos.utils;
+package me.herobrinedobem.heventos.api;
 
 public interface EventoBaseImplements {
 
@@ -17,5 +17,7 @@ public interface EventoBaseImplements {
 	public void stopEventMethod();
 
 	public void cancelEventMethod();
+	
+	public void externalPluginStart();
 
 }

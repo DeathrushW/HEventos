@@ -1,6 +1,6 @@
 Config:
   Nome: "Mina Mortal"
-  Evento_Type: "mina_mortal"
+  Evento_Type: "minamortal"
   Chamadas: 5
   Tempo_Entre_As_Chamadas: 30
   Evento_Tempo_Minutos: 10

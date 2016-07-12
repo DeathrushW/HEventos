@@ -1,4 +1,4 @@
-package me.herobrinedobem.heventos.utils;
+package me.herobrinedobem.heventos.api;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

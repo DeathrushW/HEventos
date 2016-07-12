@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import me.herobrinedobem.heventos.HEventos;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 
 public class KillerListener extends EventoBaseListener {
 

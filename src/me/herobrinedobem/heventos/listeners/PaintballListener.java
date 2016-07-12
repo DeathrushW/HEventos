@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.Paintball;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class PaintballListener extends EventoBaseListener {
 

@@ -4,8 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.BatataQuente;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class BatataQuenteListener extends EventoBaseListener {
 

@@ -11,6 +11,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.EventoType;
+import me.herobrinedobem.heventos.api.listeners.EventoStartEvent;
+import me.herobrinedobem.heventos.api.listeners.EventoStopEvent;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerJoinEvent;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerOutEvent;
 import me.herobrinedobem.heventos.eventos.BatataQuente;
 import me.herobrinedobem.heventos.eventos.BowSpleef;
 import me.herobrinedobem.heventos.eventos.EventoNormal;
@@ -19,8 +25,7 @@ import me.herobrinedobem.heventos.eventos.MinaMortal;
 import me.herobrinedobem.heventos.eventos.Paintball;
 import me.herobrinedobem.heventos.eventos.Semaforo;
 import me.herobrinedobem.heventos.eventos.Spleef;
-import me.herobrinedobem.heventos.utils.EventoBase;
-import me.herobrinedobem.heventos.utils.EventoType;
+import me.herobrinedobem.heventos.utils.EventoCancellType;
 
 public class Comandos implements CommandExecutor {
 
@@ -48,7 +53,7 @@ public class Comandos implements CommandExecutor {
 											if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
 												HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
 											}
-										} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BUILD_BATTLE)) {
+										} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
 											if (Comandos.isInventoryEmpty(p)) {
 												p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 												return false;
@@ -60,6 +65,8 @@ public class Comandos implements CommandExecutor {
 											final Player pa = HEventos.getHEventos().getServer().getPlayer(s);
 											pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEntrou().replace("$player$", p.getName()));
 										}
+										EventoPlayerJoinEvent event = new EventoPlayerJoinEvent(p, HEventos.getHEventos().getEventosController().getEvento(), false);
+										HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 										return true;
 									} else {
 										p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgEventoVip());
@@ -70,7 +77,7 @@ public class Comandos implements CommandExecutor {
 										if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
 											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
 										}
-									} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BUILD_BATTLE)) {
+									} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
 										if (Comandos.isInventoryEmpty(p)) {
 											p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 											return false;
@@ -102,6 +109,8 @@ public class Comandos implements CommandExecutor {
 							}
 							HEventos.getHEventos().getEventosController().getEvento().getParticipantes().remove(p.getName());
 							p.teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
+							EventoPlayerOutEvent event = new EventoPlayerOutEvent(p, HEventos.getHEventos().getEventosController().getEvento(), false);
+							HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 							return true;
 						} else {
 							if (HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().contains(p.getName())) {
@@ -118,6 +127,9 @@ public class Comandos implements CommandExecutor {
 									pa.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
 								}
 								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgSaiu().replace("$player$", p.getName()));
+								EventoPlayerOutEvent event = new EventoPlayerOutEvent(p, HEventos.getHEventos().getEventosController().getEvento(), true);
+								HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+								return true;
 							} else {
 								p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgNaoParticipa());
 								return true;
@@ -128,8 +140,10 @@ public class Comandos implements CommandExecutor {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().getEvento() == null) {
 							if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
+								if(HEventos.getHEventos().getEventosController().externalEvento(args[1])){
+									return true;
+								}
 								if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
-
 									switch (EventoType.getEventoType(args[1])) {
 										case SPLEEF:
 											final Spleef spleef = new Spleef(HEventos.getHEventos().getEventosController().getConfigFile(args[1]));
@@ -186,6 +200,8 @@ public class Comandos implements CommandExecutor {
 											HEventos.getHEventos().getEventosController().getEvento().run();
 											break;
 									}
+									EventoStartEvent event = new EventoStartEvent(HEventos.getHEventos().getEventosController().getEvento(), false);
+									HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 									p.sendMessage("§4[Evento] §cEvento iniciado com sucesso!");
 									return true;
 								} else {
@@ -207,6 +223,9 @@ public class Comandos implements CommandExecutor {
 				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("cancelar"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().getEvento() != null) {
+							EventoStopEvent event = new EventoStopEvent(HEventos.getHEventos().getEventosController().getEvento(), EventoCancellType.CANCELLED);
+							HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+							
 							HEventos.getHEventos().getEventosController().getEvento().cancelEvent();
 							p.sendMessage("§4[Evento] §cEvento cancelado com sucesso!");
 							return true;
@@ -242,6 +261,8 @@ public class Comandos implements CommandExecutor {
 									p.setAllowFlight(true);
 									p.setFlying(true);
 									p.setFlySpeed(1 / 10.0f);
+									EventoPlayerJoinEvent event = new EventoPlayerJoinEvent(p, HEventos.getHEventos().getEventosController().getEvento(), true);
+									HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 								} else {
 									p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgJaEstaCamarote());
 									return true;

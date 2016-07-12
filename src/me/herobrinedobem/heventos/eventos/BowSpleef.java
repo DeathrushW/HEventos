@@ -7,10 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBase;
 import me.herobrinedobem.heventos.listeners.BowSpleefListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 import me.herobrinedobem.heventos.utils.Cuboid;
-import me.herobrinedobem.heventos.utils.EventoBase;
 
 public class BowSpleef extends EventoBase {
 

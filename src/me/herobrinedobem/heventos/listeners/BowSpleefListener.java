@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.BowSpleef;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class BowSpleefListener extends EventoBaseListener {
 

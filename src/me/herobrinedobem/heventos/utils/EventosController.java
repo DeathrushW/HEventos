@@ -3,6 +3,8 @@ package me.herobrinedobem.heventos.utils;
 import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.EventoType;
 import me.herobrinedobem.heventos.eventos.BatataQuente;
 import me.herobrinedobem.heventos.eventos.BowSpleef;
 import me.herobrinedobem.heventos.eventos.EventoNormal;
@@ -52,7 +54,22 @@ public class EventosController {
 				break;
 		}
 	}
-
+	
+	public boolean externalEvento(String name){
+		boolean contains = false;
+		for(EventoBase e : HEventos.getHEventos().getExternalEventos()){
+			if(e.getNome().equalsIgnoreCase(name)){
+				e.externalPluginStart();
+				contains = true;
+			}
+		}
+		if (contains) {
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
 	public YamlConfiguration getConfigFile(final String eventoname) {
 		final File fileEvento = new File(this.instance.getDataFolder().getAbsolutePath() + "/Eventos/" + eventoname + ".yml");
 		return YamlConfiguration.loadConfiguration(fileEvento);

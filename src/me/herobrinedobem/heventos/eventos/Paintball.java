@@ -10,9 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBase;
 import me.herobrinedobem.heventos.listeners.PaintballListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
-import me.herobrinedobem.heventos.utils.EventoBase;
 
 public class Paintball extends EventoBase {
 

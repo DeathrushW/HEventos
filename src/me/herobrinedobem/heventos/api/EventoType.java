@@ -1,4 +1,4 @@
-package me.herobrinedobem.heventos.utils;
+package me.herobrinedobem.heventos.api;
 
 public enum EventoType {
 
@@ -11,7 +11,7 @@ public enum EventoType {
 	PAINTBALL,
 	SEMAFORO,
 	NORMAL,
-	BUILD_BATTLE;
+	OUTRO;
 
 	public static EventoType getEventoType(final String type) {
 		switch (type) {
@@ -33,8 +33,9 @@ public enum EventoType {
 				return EventoType.SEMAFORO;
 			case "normal":
 				return EventoType.NORMAL;
-			case "buildbattle":
-				return EventoType.BUILD_BATTLE;
+			case "outro":
+				return EventoType.OUTRO;
+			case "dev":
 			default:
 				return EventoType.NORMAL;
 		}

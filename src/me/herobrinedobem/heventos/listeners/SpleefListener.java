@@ -5,8 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBaseListener;
 import me.herobrinedobem.heventos.eventos.Spleef;
-import me.herobrinedobem.heventos.utils.EventoBaseListener;
 
 public class SpleefListener extends EventoBaseListener {
 

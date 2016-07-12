@@ -1,4 +1,4 @@
-package me.herobrinedobem.heventos.eventos;
+package me.herobrinedobem.examples.spleef;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,7 +11,7 @@ import me.herobrinedobem.heventos.listeners.SpleefListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 import me.herobrinedobem.heventos.utils.Cuboid;
 
-public class Spleef extends EventoBase {
+public class SpleefBehaviour extends EventoBase {
 
 	private final SpleefListener listener;
 	private boolean podeQuebrar, vencedorEscolhido;
@@ -19,8 +19,9 @@ public class Spleef extends EventoBase {
 	private int tempoChaoRegenera, tempoChaoRegeneraCurrent, y, tempoComecar,
 			tempoComecarCurrent;
 
-	public Spleef(final YamlConfiguration config) {
+	public SpleefBehaviour(final YamlConfiguration config) {
 		super(config);
+		setNome("spleef");
 		this.listener = new SpleefListener();
 		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
 		this.regenerarChao = config.getBoolean("Config.Regenerar_Chao");
@@ -32,44 +33,44 @@ public class Spleef extends EventoBase {
 
 	@Override
 	public void startEventMethod() {
-		final Cuboid cubo = new Cuboid(Spleef.this.getLocation("Localizacoes.Chao_1"), Spleef.this.getLocation("Localizacoes.Chao_2"));
+		final Cuboid cubo = new Cuboid(getLocation("Localizacoes.Chao_1"), getLocation("Localizacoes.Chao_2"));
 		for (final Block b : cubo.getBlocks()) {
-			b.setType(Material.getMaterial(Spleef.this.getConfig().getInt("Config.Chao_ID")));
+			b.setType(Material.getMaterial(getConfig().getInt("Config.Chao_ID")));
 		}
-		for (final String p : Spleef.this.getParticipantes()) {
-			for (final int i : Spleef.this.getConfig().getIntegerList("Itens_Ao_Iniciar")) {
-				Spleef.this.getPlayerByName(p).getInventory().addItem(new ItemStack(Material.getMaterial(i), 1));
+		for (final String p : getParticipantes()) {
+			for (final int i : getConfig().getIntegerList("Itens_Ao_Iniciar")) {
+				getPlayerByName(p).getInventory().addItem(new ItemStack(Material.getMaterial(i), 1));
 			}
 		}
 	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((Spleef.this.isOcorrendo() == true) && (Spleef.this.isAberto() == false)) {
-			Spleef.this.tempoComecarCurrent--;
+		if ((isOcorrendo() == true) && (isAberto() == false)) {
+			tempoComecarCurrent--;
 
-			if (Spleef.this.tempoComecarCurrent == 0) {
-				Spleef.this.podeQuebrar = true;
+			if (tempoComecarCurrent == 0) {
+				podeQuebrar = true;
 			}
 
-			if (Spleef.this.regenerarChao) {
-				Spleef.this.tempoChaoRegeneraCurrent--;
-				if (Spleef.this.tempoChaoRegeneraCurrent == 0) {
-					final Cuboid cubo = new Cuboid(Spleef.this.getLocation("Localizacoes.Chao_1"), Spleef.this.getLocation("Localizacoes.Chao_2"));
+			if (regenerarChao) {
+				tempoChaoRegeneraCurrent--;
+				if (tempoChaoRegeneraCurrent == 0) {
+					final Cuboid cubo = new Cuboid(getLocation("Localizacoes.Chao_1"), getLocation("Localizacoes.Chao_2"));
 					for (final Block b : cubo.getBlocks()) {
 						b.setType(Material.getMaterial("Config.Chao_ID"));
 					}
-					Spleef.this.tempoChaoRegeneraCurrent = Spleef.this.tempoChaoRegenera;
+					tempoChaoRegeneraCurrent = tempoChaoRegenera;
 				}
 			}
 
-			if (Spleef.this.getParticipantes().size() == 1) {
-				Spleef.this.encerrarEventoComVencedor();
+			if (getParticipantes().size() == 1) {
+				encerrarEventoComVencedor();
 			}
 
-			if (Spleef.this.vencedorEscolhido == false) {
-				if (Spleef.this.getParticipantes().size() == 0) {
-					Spleef.this.encerrarEventoSemVencedor();
+			if (vencedorEscolhido == false) {
+				if (getParticipantes().size() == 0) {
+					encerrarEventoSemVencedor();
 				}
 			}
 		}
@@ -96,7 +97,6 @@ public class Spleef extends EventoBase {
 		for (final String sa : this.getConfig().getStringList("Premios.Itens")) {
 			HEventos.getHEventos().getServer().dispatchCommand(HEventos.getHEventos().getServer().getConsoleSender(), sa.replace("$player$", p.getName()));
 		}
-		HEventos.getHEventos().getEconomy().depositPlayer(p.getName(), this.getMoney());
 		if (this.isContarVitoria()) {
 			if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
 				HEventos.getHEventos().getMysql().addWinnerPoint(p.getName());
@@ -200,5 +200,5 @@ public class Spleef extends EventoBase {
 	public SpleefListener getListener() {
 		return this.listener;
 	}
-
+	
 }

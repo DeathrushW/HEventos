@@ -1,0 +1,77 @@
+Config:
+  Nome: "spleef"
+  Evento_Type: "outro"
+  Chamadas: 5
+  Tempo_Entre_As_Chamadas: 30
+  Regenerar_Chao: true
+  Tempo_Chao_Regenera: 60
+  Tempo_Comecar: 15
+  PVP: false
+  VIP: false
+  Assistir_Ativado: true
+  Assistir_Invisivel: true
+  Contar_Vitoria: true
+  Contar_Participacao: true
+  Chao_ID: 80
+  
+Itens_Ao_Iniciar:
+  - 256
+  - 256
+  - 256
+
+Localizacoes:
+  Saida: "world;-110;92;1482"
+  Camarote: "evento;99826;18;99884"
+  Entrada: "evento;99826;18;99884"
+  Aguardando: "VIP;-1535;7;1706"
+  Chao_1: "evento;99803;16;99868"
+  Chao_2: "evento;99849;16;99900"
+
+Premios:
+  Primeiro_Lugar:
+    - "give $player$ diamond 3"
+  Segundo_Lugar:
+    - "give $player$ diamond 2"
+  Terceiro_Lugar:
+    - "give $player$ diamond 1"
+  Money: 5000.0
+
+Mensagens:
+  Aberto:
+    - "  "
+    - "&9[Spleef] &fO evento &6Spleef &festa aberto!"
+    - "&9[Spleef] &fPara participar digite &6/evento entrar"
+    - "&9[Spleef] &fEsse evento e pvp &a[OFF]"
+    - "&9[Spleef] &fRisco de morte &a[OFF]"
+    - "  "
+  Aberto_VIP:
+    - "  "
+    - "&9[Spleef VIP] &fO evento &6Spleef VIP &festa aberto!"
+    - "&9[Spleef VIP] &fPara participar digite &6/evento entrar"
+    - "&9[Spleef VIP] &fEsse evento e pvp &a[OFF]"
+    - "&9[Spleef VIP] &fRisco de morte &a[OFF]"
+    - "  "
+  Iniciando:
+    - "  "
+    - "&9[Spleef] &fEvento fechado, iniciando!"
+    - "&9[Spleef] &fBoa sorte aos participantes!"
+    - "  "
+  Vencedor:
+    - "  "
+    - "&9[Spleef] &fO evento &6Spleef &ffoi finalizado!"
+    - "&9[Spleef] &fO vencedor foi &6$player$&f!"
+    - "&9[Spleef] &fPremio pago e jogadores teleportados para a saida!"
+    - "  "
+  Cancelado:
+    - "  "
+    - "&4[Speed] &cEvento Spleef foi cancelado!"
+    - "  "
+  Sem_Vencedor:
+    - "  "
+    - "&4[Spleef] &cO evento Spleef foi finalizado!"
+    - "&4[Spleef] &cNao houve vencedores!"
+    - "  "
+  Eliminado:
+    - "&9[Spleef] &fO jogador &6$player$ &ffoi eliminado!"
+  Aguarde_Quebrar:
+    - "&9[Spleef] &fAguarde &6$tempo$ &fsegundos para quebrar os blocos!"

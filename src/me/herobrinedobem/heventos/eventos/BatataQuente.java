@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.EventoBase;
 import me.herobrinedobem.heventos.listeners.BatataQuenteListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
-import me.herobrinedobem.heventos.utils.EventoBase;
 
 public class BatataQuente extends EventoBase {
 
@@ -66,48 +66,48 @@ public class BatataQuente extends EventoBase {
 					}
 				}
 				BatataQuente.this.stopEvent();
-			}
-
-			if (BatataQuente.this.tempoBatataCurrent > 0) {
-				BatataQuente.this.tempoBatataCurrent--;
-				final Location loc = BatataQuente.this.playerComBatata.getLocation();
-				final Firework firework = BatataQuente.this.playerComBatata.getWorld().spawn(loc, Firework.class);
-				final FireworkMeta data = firework.getFireworkMeta();
-				data.addEffects(FireworkEffect.builder().withColor(Color.RED).with(Type.BALL).build());
-				data.setPower(2);
-				firework.setFireworkMeta(data);
-				if ((BatataQuente.this.tempoBatataCurrent == 29) || (BatataQuente.this.tempoBatataCurrent == 20) || (BatataQuente.this.tempoBatataCurrent == 10) || (BatataQuente.this.tempoBatataCurrent == 5) || (BatataQuente.this.tempoBatataCurrent == 4) || (BatataQuente.this.tempoBatataCurrent == 3) || (BatataQuente.this.tempoBatataCurrent == 2) || (BatataQuente.this.tempoBatataCurrent == 1)) {
-					for (final String s : BatataQuente.this.getParticipantes()) {
-						final Player p = BatataQuente.this.getPlayerByName(s);
-						p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
-					}
-					for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Tempo")) {
-						for (final String sa : BatataQuente.this.getParticipantes()) {
-							final Player p = BatataQuente.this.getPlayerByName(sa);
-							p.sendMessage(s.replace("&", "§").replace("$tempo$", BatataQuente.this.tempoBatataCurrent + ""));
+			}else{
+				if (BatataQuente.this.tempoBatataCurrent > 0) {
+					BatataQuente.this.tempoBatataCurrent--;
+					final Location loc = BatataQuente.this.playerComBatata.getLocation();
+					final Firework firework = BatataQuente.this.playerComBatata.getWorld().spawn(loc, Firework.class);
+					final FireworkMeta data = firework.getFireworkMeta();
+					data.addEffects(FireworkEffect.builder().withColor(Color.RED).with(Type.BALL).build());
+					data.setPower(2);
+					firework.setFireworkMeta(data);
+					if ((BatataQuente.this.tempoBatataCurrent == 29) || (BatataQuente.this.tempoBatataCurrent == 20) || (BatataQuente.this.tempoBatataCurrent == 10) || (BatataQuente.this.tempoBatataCurrent == 5) || (BatataQuente.this.tempoBatataCurrent == 4) || (BatataQuente.this.tempoBatataCurrent == 3) || (BatataQuente.this.tempoBatataCurrent == 2) || (BatataQuente.this.tempoBatataCurrent == 1)) {
+						for (final String s : BatataQuente.this.getParticipantes()) {
+							final Player p = BatataQuente.this.getPlayerByName(s);
+							p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+						}
+						for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Tempo")) {
+							for (final String sa : BatataQuente.this.getParticipantes()) {
+								final Player p = BatataQuente.this.getPlayerByName(sa);
+								p.sendMessage(s.replace("&", "§").replace("$tempo$", BatataQuente.this.tempoBatataCurrent + ""));
+							}
 						}
 					}
-				}
-			} else {
-				BatataQuente.this.playerComBatata.getInventory().removeItem(new ItemStack(Material.POTATO_ITEM, 1));
-				BatataQuente.this.playerComBatata.teleport(BatataQuente.this.getSaida());
-				BatataQuente.this.getParticipantes().remove(BatataQuente.this.playerComBatata.getName());
-				for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Eliminado")) {
-					for (final String sa : BatataQuente.this.getParticipantes()) {
-						final Player p = BatataQuente.this.getPlayerByName(sa);
-						p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+				} else {
+					BatataQuente.this.playerComBatata.getInventory().removeItem(new ItemStack(Material.POTATO_ITEM, 1));
+					BatataQuente.this.playerComBatata.teleport(BatataQuente.this.getSaida());
+					BatataQuente.this.getParticipantes().remove(BatataQuente.this.playerComBatata.getName());
+					for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Eliminado")) {
+						for (final String sa : BatataQuente.this.getParticipantes()) {
+							final Player p = BatataQuente.this.getPlayerByName(sa);
+							p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+						}
 					}
-				}
-				final Random r = new Random();
-				BatataQuente.this.playerComBatata = BatataQuente.this.getPlayerByName(BatataQuente.this.getParticipantes().get(r.nextInt(BatataQuente.this.getParticipantes().size())));
-				for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
-					BatataQuente.this.playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
-					for (final String sa : BatataQuente.this.getParticipantes()) {
-						final Player p = BatataQuente.this.getPlayerByName(sa);
-						p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+					final Random r = new Random();
+					BatataQuente.this.playerComBatata = BatataQuente.this.getPlayerByName(BatataQuente.this.getParticipantes().get(r.nextInt(BatataQuente.this.getParticipantes().size())));
+					for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
+						BatataQuente.this.playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
+						for (final String sa : BatataQuente.this.getParticipantes()) {
+							final Player p = BatataQuente.this.getPlayerByName(sa);
+							p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+						}
 					}
+					BatataQuente.this.tempoBatataCurrent = BatataQuente.this.tempoBatata;
 				}
-				BatataQuente.this.tempoBatataCurrent = BatataQuente.this.tempoBatata;
 			}
 		}
 	}

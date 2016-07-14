@@ -54,7 +54,7 @@ public class Comandos implements CommandExecutor {
 												HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
 											}
 										} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
-											if (Comandos.isInventoryEmpty(p)) {
+											if (Comandos.checkInventory(p)) {
 												p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 												return false;
 											}
@@ -78,7 +78,7 @@ public class Comandos implements CommandExecutor {
 											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
 										}
 									} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
-										if (Comandos.isInventoryEmpty(p)) {
+										if (Comandos.checkInventory(p)) {
 											p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 											return false;
 										}
@@ -470,30 +470,19 @@ public class Comandos implements CommandExecutor {
 		return world + ";" + String.valueOf(x) + ";" + String.valueOf(y) + ";" + String.valueOf(z);
 	}
 
-	private static boolean isInventoryEmpty(final Player p) {
-		boolean contains = false;
-		for (final ItemStack item : p.getInventory().getContents()) {
-			if (item != null) {
-				contains = true;
-			}
-		}
-		if (p.getInventory().getHelmet() != null) {
-			contains = true;
-		}
-		if (p.getInventory().getChestplate() != null) {
-			contains = true;
-		}
-		if (p.getInventory().getLeggings() != null) {
-			contains = true;
-		}
-		if (p.getInventory().getBoots() != null) {
-			contains = true;
-		}
-		if (contains) {
-			return true;
-		} else {
-			return false;
-		}
+	private static boolean checkItemStacks(final ItemStack[] ises) {
+  		for(ItemStack is : ises)
+    			if(is != null && is.getType() != Material.AIR)
+      				return true;
+  		return false;
 	}
+	
+	private static boolean checkInventory(final Player player) {
+		if((player != null) && (player.isOnline())) {
+			return (checkItemStacks(player.getInventory().getArmorContents()) && checkItemStacks(player.getInventory().getContents()));
+		return false;
+	}
+	
+	
 
 }

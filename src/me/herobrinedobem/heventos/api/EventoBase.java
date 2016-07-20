@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerLoseEvent;
 import me.herobrinedobem.heventos.api.listeners.EventoStopEvent;
 import me.herobrinedobem.heventos.utils.EventoCancellType;
 
@@ -16,9 +17,8 @@ public class EventoBase implements EventoBaseImplements {
 	private String horarioStart;
 	private final ArrayList<String> participantes = new ArrayList<String>();
 	private boolean ocorrendo, aberto, parte1, vip, assistirAtivado,
-			assistirInvisivel, pvp, contarVitoria, contarParticipacao;
+			assistirInvisivel, pvp, contarVitoria, contarParticipacao, inventoryEmpty;
 	private int chamadas, tempo, id2, chamadascurrent, id;
-	private double money;
 	private String nome;
 	private Location saida, entrada, camarote, aguarde;
 	private final ArrayList<String> vencedores = new ArrayList<String>();
@@ -39,11 +39,11 @@ public class EventoBase implements EventoBaseImplements {
 		this.contarParticipacao = this.config.getBoolean("Config.Contar_Participacao");
 		this.contarVitoria = this.config.getBoolean("Config.Contar_Vitoria");
 		this.tempo = this.config.getInt("Config.Tempo_Entre_As_Chamadas");
-		this.saida = this.getLocation("Localizacoes.Saida");
-		this.camarote = this.getLocation("Localizacoes.Camarote");
-		this.entrada = this.getLocation("Localizacoes.Entrada");
-		this.aguarde = this.getLocation("Localizacoes.Aguardando");
-		this.money = this.config.getInt("Premios.Money") * HEventos.getHEventos().getConfig().getInt("Money_Multiplicador");
+		this.inventoryEmpty = this.config.getBoolean("Config.Inv_Vazio");
+		this.saida = HEventosAPI.getLocation(config, "Localizacoes.Saida");
+		this.camarote = HEventosAPI.getLocation(config, "Localizacoes.Camarote");
+		this.entrada = HEventosAPI.getLocation(config, "Localizacoes.Entrada");
+		this.aguarde = HEventosAPI.getLocation(config, "Localizacoes.Aguardando");
 		this.aberto = false;
 		this.ocorrendo = false;
 		this.parte1 = false;
@@ -80,7 +80,8 @@ public class EventoBase implements EventoBaseImplements {
 	@Override
 	public void cancelEvent() {
 		for (final String s : this.participantes) {
-			this.getPlayerByName(s).teleport(this.getSaida());
+			EventoPlayerLoseEvent event = new EventoPlayerLoseEvent(getPlayerByName(s), this);
+			HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 		}
 		for (final String s : this.camarotePlayers) {
 			this.getPlayerByName(s).teleport(this.getSaida());
@@ -106,23 +107,13 @@ public class EventoBase implements EventoBaseImplements {
 				EventoBase.this.sendMessageList("Mensagens.Aberto");
 			}
 		} else if (EventoBase.this.chamadascurrent == 0) {
-			if (EventoBase.this.participantes.size() >= 1) {
+			if (EventoBase.this.participantes.size() > 1) {
 				EventoBase.this.aberto = false;
 				EventoBase.this.parte1 = true;
 				this.startEventMethod();
 				EventoBase.this.sendMessageList("Mensagens.Iniciando");
 				for (final String sa : EventoBase.this.camarotePlayers) {
 					EventoBase.this.getPlayerByName(sa).teleport(EventoBase.this.camarote);
-				}
-				for (final String p : EventoBase.this.participantes) {
-					EventoBase.this.getPlayerByName(p).teleport(EventoBase.this.entrada);
-					if (EventoBase.this.contarParticipacao) {
-						if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-							HEventos.getHEventos().getMysql().addPartipationPoint(p);
-						} else {
-							HEventos.getHEventos().getSqlite().addPartipationPoint(p);
-						}
-					}
 				}
 			} else {
 				EventoBase.this.resetEvent();
@@ -154,7 +145,8 @@ public class EventoBase implements EventoBaseImplements {
 		EventoStopEvent event = new EventoStopEvent(HEventos.getHEventos().getEventosController().getEvento(), EventoCancellType.FINISHED);
 		HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
 		for (final String s : this.participantes) {
-			this.getPlayerByName(s).teleport(this.getSaida());
+			EventoPlayerLoseEvent event2 = new EventoPlayerLoseEvent(getPlayerByName(s), this);
+			HEventos.getHEventos().getServer().getPluginManager().callEvent(event2);
 		}
 		for (final String s : this.camarotePlayers) {
 			this.getPlayerByName(s).teleport(this.getSaida());
@@ -179,11 +171,11 @@ public class EventoBase implements EventoBaseImplements {
 		this.contarParticipacao = this.config.getBoolean("Config.Contar_Participacao");
 		this.contarVitoria = this.config.getBoolean("Config.Contar_Vitoria");
 		this.tempo = this.config.getInt("Config.Tempo_Entre_As_Chamadas");
-		this.saida = this.getLocation("Localizacoes.Saida");
-		this.camarote = this.getLocation("Localizacoes.Camarote");
-		this.entrada = this.getLocation("Localizacoes.Entrada");
-		this.aguarde = this.getLocation("Localizacoes.Aguardando");
-		this.money = this.config.getInt("Premios.Money") * HEventos.getHEventos().getConfig().getInt("Money_Multiplicador");
+		this.saida = HEventosAPI.getLocation(config, "Localizacoes.Saida");
+		this.camarote = HEventosAPI.getLocation(config, "Localizacoes.Camarote");
+		this.entrada = HEventosAPI.getLocation(config, "Localizacoes.Entrada");
+		this.aguarde = HEventosAPI.getLocation(config, "Localizacoes.Aguardando");
+		this.inventoryEmpty = this.config.getBoolean("Config.Inv_Vazio");
 		this.aberto = false;
 		this.ocorrendo = false;
 		this.parte1 = false;
@@ -216,14 +208,6 @@ public class EventoBase implements EventoBaseImplements {
 		for (final String s : this.config.getStringList(list)) {
 			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§"));
 		}
-	}
-
-	public Location getLocation(final String local) {
-		final String world = this.config.getString(local).split(";")[0];
-		final double x = Double.parseDouble(this.config.getString(local).split(";")[1]);
-		final double y = Double.parseDouble(this.config.getString(local).split(";")[2]);
-		final double z = Double.parseDouble(this.config.getString(local).split(";")[3]);
-		return new Location(HEventos.getHEventos().getServer().getWorld(world), x, y, z);
 	}
 
 	public int getId() {
@@ -341,14 +325,6 @@ public class EventoBase implements EventoBaseImplements {
 		this.chamadascurrent = chamadascurrent;
 	}
 
-	public double getMoney() {
-		return this.money;
-	}
-
-	public void setMoney(final double money) {
-		this.money = money;
-	}
-
 	public String getNome() {
 		return this.nome;
 	}
@@ -415,6 +391,10 @@ public class EventoBase implements EventoBaseImplements {
 	
 	public void setHorarioStart(String horarioStart) {
 		this.horarioStart = horarioStart;
+	}
+	
+	public boolean isInventoryEmpty() {
+		return inventoryEmpty;
 	}
 	
 }

@@ -13,6 +13,7 @@ Config:
   Contar_Vitoria: true
   Contar_Participacao: true
   Chao_ID: 80
+  Inv_Vazio: false
   
 Itens_Ao_Iniciar:
   - 256
@@ -20,20 +21,16 @@ Itens_Ao_Iniciar:
   - 256
 
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "evento;99826;18;99884"
-  Entrada: "evento;99826;18;99884"
-  Aguardando: "VIP;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "evento;99826;18;99884;30.50;226.10"
+  Entrada: "evento;99826;18;99884;30.50;226.10"
+  Aguardando: "VIP;-1535;7;1706;30.50;226.10"
   Chao_1: "evento;99803;16;99868"
   Chao_2: "evento;99849;16;99900"
 
 Premios:
-  Primeiro_Lugar:
+  Comandos:
     - "give $player$ diamond 3"
-  Segundo_Lugar:
-    - "give $player$ diamond 2"
-  Terceiro_Lugar:
-    - "give $player$ diamond 1"
   Money: 5000.0
 
 Mensagens:

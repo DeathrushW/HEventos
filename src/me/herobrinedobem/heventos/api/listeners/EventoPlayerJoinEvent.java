@@ -7,7 +7,7 @@ import me.herobrinedobem.heventos.api.EventoBase;
 
 public class EventoPlayerJoinEvent extends Event {
 	
-	private final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	private Player player;
 	private EventoBase evento;
 	private boolean assistindo;
@@ -19,7 +19,11 @@ public class EventoPlayerJoinEvent extends Event {
 	}
 	
 	public HandlerList getHandlers() {
-	    return handlers;
+		return handlers;
+	}
+		 
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 	
 	public Player getPlayer() {

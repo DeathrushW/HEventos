@@ -13,8 +13,13 @@ public class ConfigUtil {
 			msgInventarioVazio;
 	private ArrayList<String> comandosBloqueados = new ArrayList<>();
 	private boolean mysqlAtivado;
+	
+	
+	public ConfigUtil() {
+		setupConfigUtils();
+	}
 
-	public void setupConfigUtil() {
+	public void setupConfigUtils(){
 		this.setMsgInventarioVazio(HEventos.getHEventos().getConfig().getString("Mensagens.Inventario_Vazio").replace("&", "§"));
 		this.setMsgAssistirDesativado(HEventos.getHEventos().getConfig().getString("Mensagens.Assistir_Desativado").replace("&", "§"));
 		this.setMsgEventoVip(HEventos.getHEventos().getConfig().getString("Mensagens.Evento_VIP").replace("&", "§"));
@@ -35,7 +40,7 @@ public class ConfigUtil {
 		this.setTopVencedoresPosicao(HEventos.getHEventos().getConfig().getString("Mensagens.Top_Vencedores_Posicao").replace("&", "§"));
 		this.setMysqlAtivado(HEventos.getHEventos().getConfig().getBoolean("MySQL.Ativado"));
 	}
-
+	
 	public String getMsgInventarioVazio() {
 		return this.msgInventarioVazio;
 	}

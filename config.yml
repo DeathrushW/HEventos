@@ -44,8 +44,8 @@ Mensagens:
     - "&9/evento entrar &f- Entra em um evento"
     - "&9/evento assistir &f- Assisti ao evento"
     - "&9/evento sair &f- Sai do evento"
-    - "&9/evento topvencedores &f- Mostra quem mais venceu eventos"
-    - "&9/evento topparticipacoes &f- Mostra quem mais participou de eventos"
+    - "&9/evento top vencedores &f- Mostra quem mais venceu eventos"
+    - "&9/evento top participacoes &f- Mostra quem mais participou de eventos"
 MySQL:
   Ativado: false
   Usuario: "user"

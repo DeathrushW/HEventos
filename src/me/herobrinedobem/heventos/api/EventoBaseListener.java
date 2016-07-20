@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import me.herobrinedobem.heventos.HEventos;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerWinEvent;
 
 public class EventoBaseListener implements Listener {
 
@@ -62,8 +63,8 @@ public class EventoBaseListener implements Listener {
 					final Player p = HEventos.getHEventos().getServer().getPlayer(s);
 					p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgMorreu().replace("$player$", e.getEntity().getPlayer().getName()));
 				}
-				HEventos.getHEventos().getEventosController().getEvento().getParticipantes().remove(e.getEntity().getPlayer().getName());
-				e.getEntity().getPlayer().teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
+				EventoPlayerWinEvent event2 = new EventoPlayerWinEvent(e.getEntity().getPlayer(), HEventos.getHEventos().getEventosController().getEvento(), 0);
+				HEventos.getHEventos().getServer().getPluginManager().callEvent(event2);
 				e.setNewTotalExp(e.getDroppedExp());
 			}
 			if (HEventos.getHEventos().getEventosController().getEvento().isAssistirAtivado()) {
@@ -80,8 +81,8 @@ public class EventoBaseListener implements Listener {
 	public void onPlayerQuitEvent(final PlayerQuitEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if (HEventos.getHEventos().getEventosController().getEvento().getParticipantes().contains(e.getPlayer().getName())) {
-				HEventos.getHEventos().getEventosController().getEvento().getParticipantes().remove(e.getPlayer().getName());
-				e.getPlayer().teleport(HEventos.getHEventos().getEventosController().getEvento().getSaida());
+				EventoPlayerWinEvent event2 = new EventoPlayerWinEvent(e.getPlayer(), HEventos.getHEventos().getEventosController().getEvento(), 0);
+				HEventos.getHEventos().getServer().getPluginManager().callEvent(event2);
 				for (final String s : HEventos.getHEventos().getEventosController().getEvento().getParticipantes()) {
 					final Player p = HEventos.getHEventos().getServer().getPlayer(s);
 					p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgDesconect().replace("$player$", e.getPlayer().getName()));

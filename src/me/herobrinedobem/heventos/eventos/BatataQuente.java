@@ -14,99 +14,98 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.HEventosAPI;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerLoseEvent;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerWinEvent;
 import me.herobrinedobem.heventos.listeners.BatataQuenteListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 
 public class BatataQuente extends EventoBase {
 
-	private final BatataQuenteListener listener;
+	private BatataQuenteListener listener;
 	private int tempoBatataCurrent, tempoBatata;
 	private Player playerComBatata, vencedor;
 
-	public BatataQuente(final YamlConfiguration config) {
+	public BatataQuente(YamlConfiguration config) {
 		super(config);
-		this.listener = new BatataQuenteListener();
-		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
-		this.tempoBatata = config.getInt("Config.Tempo_Batata_Explodir");
-		this.vencedor = null;
-		this.playerComBatata = null;
-		this.tempoBatataCurrent = this.tempoBatata;
+		listener = new BatataQuenteListener();
+		HEventos.getHEventos().getServer().getPluginManager().registerEvents(listener, HEventos.getHEventos());
+		tempoBatata = config.getInt("Config.Tempo_Batata_Explodir");
+		vencedor = null;
+		playerComBatata = null;
+		tempoBatataCurrent = tempoBatata;
 	}
 
 	@Override
 	public void startEventMethod() {
-		final Random r = new Random();
-		BatataQuente.this.playerComBatata = BatataQuente.this.getPlayerByName(BatataQuente.this.getParticipantes().get(r.nextInt(BatataQuente.this.getParticipantes().size())));
-		BatataQuente.this.playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
-		for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
-			for (final String sa : BatataQuente.this.getParticipantes()) {
-				final Player sab = BatataQuente.this.getPlayerByName(sa);
-				sab.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+		for(String s : getParticipantes()){
+			getPlayerByName(s).teleport(HEventosAPI.getLocation(getConfig(), "Localizacoes.Entrada"));
+		}
+		Random r = new Random();
+		playerComBatata = getPlayerByName(getParticipantes().get(r.nextInt(getParticipantes().size())));
+		playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
+		for (String s : getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
+			for (String sa : getParticipantes()) {
+				getPlayerByName(sa).sendMessage(s.replace("&", "§").replace("$player$", playerComBatata.getName()));
 			}
 		}
 	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((BatataQuente.this.isOcorrendo() == true) && (BatataQuente.this.isAberto() == false) && (BatataQuente.this.playerComBatata != null)) {
-			if (BatataQuente.this.getParticipantes().size() <= 1) {
-				Player p = null;
-				for (final String s : BatataQuente.this.getParticipantes()) {
-					p = BatataQuente.this.getPlayerByName(s);
+		if ((isOcorrendo() == true) && (isAberto() == false) && (playerComBatata != null)) {
+			if (getParticipantes().size() == 1) {
+				Player player = null;
+				for(String s : getParticipantes()){
+					player = getPlayerByName(s);
 				}
-				for (final String sa : BatataQuente.this.getConfig().getStringList("Premios.Itens")) {
-					HEventos.getHEventos().getServer().dispatchCommand(HEventos.getHEventos().getServer().getConsoleSender(), sa.replace("$player$", p.getName()));
-				}
-				HEventos.getHEventos().getEconomy().depositPlayer(p.getName(), BatataQuente.this.getMoney());
-				if (BatataQuente.this.isContarVitoria()) {
-					if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-						HEventos.getHEventos().getMysql().addWinnerPoint(p.getName());
-					} else {
-						HEventos.getHEventos().getSqlite().addWinnerPoint(p.getName());
-					}
-				}
-				BatataQuente.this.stopEvent();
+				EventoPlayerWinEvent event = new EventoPlayerWinEvent(player, this, 0);
+				HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+				stopEvent();
+			}else if(getParticipantes().size() == 0){
+				sendMessageList("Mensagens.Sem_Vencedor");
+				stopEvent();
 			}else{
-				if (BatataQuente.this.tempoBatataCurrent > 0) {
-					BatataQuente.this.tempoBatataCurrent--;
-					final Location loc = BatataQuente.this.playerComBatata.getLocation();
-					final Firework firework = BatataQuente.this.playerComBatata.getWorld().spawn(loc, Firework.class);
-					final FireworkMeta data = firework.getFireworkMeta();
+				if (tempoBatataCurrent > 0) {
+					tempoBatataCurrent--;
+					Location loc = playerComBatata.getLocation();
+					Firework firework = playerComBatata.getWorld().spawn(loc, Firework.class);
+					FireworkMeta data = firework.getFireworkMeta();
 					data.addEffects(FireworkEffect.builder().withColor(Color.RED).with(Type.BALL).build());
 					data.setPower(2);
 					firework.setFireworkMeta(data);
-					if ((BatataQuente.this.tempoBatataCurrent == 29) || (BatataQuente.this.tempoBatataCurrent == 20) || (BatataQuente.this.tempoBatataCurrent == 10) || (BatataQuente.this.tempoBatataCurrent == 5) || (BatataQuente.this.tempoBatataCurrent == 4) || (BatataQuente.this.tempoBatataCurrent == 3) || (BatataQuente.this.tempoBatataCurrent == 2) || (BatataQuente.this.tempoBatataCurrent == 1)) {
-						for (final String s : BatataQuente.this.getParticipantes()) {
-							final Player p = BatataQuente.this.getPlayerByName(s);
+					if ((tempoBatataCurrent == 29) || (tempoBatataCurrent == 20) || (tempoBatataCurrent == 10) || (tempoBatataCurrent == 5) || (tempoBatataCurrent == 4) || (tempoBatataCurrent == 3) || (tempoBatataCurrent == 2) || (tempoBatataCurrent == 1)) {
+						for (String s : getParticipantes()) {
+							Player p = getPlayerByName(s);
 							p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 						}
-						for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Tempo")) {
-							for (final String sa : BatataQuente.this.getParticipantes()) {
-								final Player p = BatataQuente.this.getPlayerByName(sa);
-								p.sendMessage(s.replace("&", "§").replace("$tempo$", BatataQuente.this.tempoBatataCurrent + ""));
+						for (String s : getConfig().getStringList("Mensagens.Tempo")) {
+							for (String sa : getParticipantes()) {
+								Player p = getPlayerByName(sa);
+								p.sendMessage(s.replace("&", "§").replace("$tempo$", tempoBatataCurrent + ""));
 							}
 						}
 					}
 				} else {
-					BatataQuente.this.playerComBatata.getInventory().removeItem(new ItemStack(Material.POTATO_ITEM, 1));
-					BatataQuente.this.playerComBatata.teleport(BatataQuente.this.getSaida());
-					BatataQuente.this.getParticipantes().remove(BatataQuente.this.playerComBatata.getName());
-					for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Eliminado")) {
-						for (final String sa : BatataQuente.this.getParticipantes()) {
-							final Player p = BatataQuente.this.getPlayerByName(sa);
-							p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+					playerComBatata.getInventory().removeItem(new ItemStack(Material.POTATO_ITEM, 1));
+					EventoPlayerLoseEvent event = new EventoPlayerLoseEvent(playerComBatata, HEventos.getHEventos().getEventosController().getEvento());
+					HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+					for (String s : getConfig().getStringList("Mensagens.Eliminado")) {
+						for (String sa : getParticipantes()) {
+							Player p = getPlayerByName(sa);
+							p.sendMessage(s.replace("&", "§").replace("$player$", playerComBatata.getName()));
 						}
 					}
-					final Random r = new Random();
-					BatataQuente.this.playerComBatata = BatataQuente.this.getPlayerByName(BatataQuente.this.getParticipantes().get(r.nextInt(BatataQuente.this.getParticipantes().size())));
-					for (final String s : BatataQuente.this.getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
-						BatataQuente.this.playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
-						for (final String sa : BatataQuente.this.getParticipantes()) {
-							final Player p = BatataQuente.this.getPlayerByName(sa);
-							p.sendMessage(s.replace("&", "§").replace("$player$", BatataQuente.this.playerComBatata.getName()));
+					Random r = new Random();
+					playerComBatata = getPlayerByName(getParticipantes().get(r.nextInt(getParticipantes().size())));
+					for (String s : getConfig().getStringList("Mensagens.Esta_Com_Batata")) {
+						playerComBatata.getInventory().addItem(new ItemStack(Material.POTATO_ITEM, 1));
+						for (String sa : getParticipantes()) {
+							Player p = getPlayerByName(sa);
+							p.sendMessage(s.replace("&", "§").replace("$player$", playerComBatata.getName()));
 						}
 					}
-					BatataQuente.this.tempoBatataCurrent = BatataQuente.this.tempoBatata;
+					tempoBatataCurrent = tempoBatata;
 				}
 			}
 		}
@@ -114,39 +113,24 @@ public class BatataQuente extends EventoBase {
 
 	@Override
 	public void cancelEventMethod() {
-		this.sendMessageList("Mensagens.Cancelado");
-	}
-
-	@Override
-	public void stopEventMethod() {
-		this.sendMessageListVencedor("Mensagens.Vencedor");
+		sendMessageList("Mensagens.Cancelado");
 	}
 
 	@Override
 	public void resetEvent() {
 		super.resetEvent();
-		this.tempoBatata = this.getConfig().getInt("Config.Tempo_Batata_Explodir");
-		this.vencedor = null;
-		this.playerComBatata = null;
-		this.tempoBatataCurrent = this.tempoBatata;
-		BukkitEventHelper.unregisterEvents(this.listener, HEventos.getHEventos());
-	}
-
-	private void sendMessageListVencedor(final String list) {
-		Player p = null;
-		for (final String s : BatataQuente.this.getParticipantes()) {
-			p = BatataQuente.this.getPlayerByName(s);
-		}
-		for (final String s : this.getConfig().getStringList(list)) {
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", p.getName()));
-		}
+		tempoBatata = getConfig().getInt("Config.Tempo_Batata_Explodir");
+		vencedor = null;
+		playerComBatata = null;
+		tempoBatataCurrent = tempoBatata;
+		BukkitEventHelper.unregisterEvents(listener, HEventos.getHEventos());
 	}
 
 	public int getTempoBatataCurrent() {
 		return this.tempoBatataCurrent;
 	}
 
-	public void setTempoBatataCurrent(final int tempoBatataCurrent) {
+	public void setTempoBatataCurrent(int tempoBatataCurrent) {
 		this.tempoBatataCurrent = tempoBatataCurrent;
 	}
 
@@ -154,7 +138,7 @@ public class BatataQuente extends EventoBase {
 		return this.tempoBatata;
 	}
 
-	public void setTempoBatata(final int tempoBatata) {
+	public void setTempoBatata(int tempoBatata) {
 		this.tempoBatata = tempoBatata;
 	}
 
@@ -162,7 +146,7 @@ public class BatataQuente extends EventoBase {
 		return this.playerComBatata;
 	}
 
-	public void setPlayerComBatata(final Player playerComBatata) {
+	public void setPlayerComBatata(Player playerComBatata) {
 		this.playerComBatata = playerComBatata;
 	}
 
@@ -170,7 +154,7 @@ public class BatataQuente extends EventoBase {
 		return this.vencedor;
 	}
 
-	public void setVencedor(final Player vencedor) {
+	public void setVencedor(Player vencedor) {
 		this.vencedor = vencedor;
 	}
 

@@ -10,14 +10,17 @@ Config:
   Contar_Vitoria: true
   Contar_Participacao: true
   Tempo_Troca: 20
+  Inv_Vazio: false
   
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "world;-839;8;1109"
-  Entrada: "world;-839;8;1109"
-  Aguardando: "world;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "world;-839;8;1109;30.50;226.10"
+  Entrada: "world;-839;8;1109;30.50;226.10"
+  Aguardando: "world;-1535;7;1706;30.50;226.10"
 
 Premios:
+  Comandos:
+    - "give $player$ diamond 3"
   Money: 5000.0
 
 Mensagens:

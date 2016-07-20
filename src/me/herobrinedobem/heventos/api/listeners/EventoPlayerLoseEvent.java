@@ -1,19 +1,19 @@
 package me.herobrinedobem.heventos.api.listeners;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import me.herobrinedobem.heventos.api.EventoBase;
-import me.herobrinedobem.heventos.utils.EventoCancellType;
 
-public class EventoStopEvent extends Event {
+public class EventoPlayerLoseEvent extends Event {
 	
 	private static final HandlerList handlers = new HandlerList();
+	private Player player;
 	private EventoBase evento;
-	private EventoCancellType cancellType;
 	
-	public EventoStopEvent(EventoBase evento, EventoCancellType cancellType) {
+	public EventoPlayerLoseEvent(Player player, EventoBase evento) {
+		this.player = player;
 		this.evento = evento;
-		this.cancellType = cancellType;
 	}
 	
 	public HandlerList getHandlers() {
@@ -24,12 +24,12 @@ public class EventoStopEvent extends Event {
 		return handlers;
 	}
 	
-	public EventoBase getEvento() {
-		return evento;
+	public Player getPlayer() {
+		return player;
 	}
 	
-	public EventoCancellType getCancellType() {
-		return cancellType;
+	public EventoBase getEvento() {
+		return evento;
 	}
 	
 }

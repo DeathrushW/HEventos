@@ -9,21 +9,27 @@ Config:
   Assistir_Invisivel: true
   Contar_Vitoria: true
   Contar_Participacao: true
+  Inv_Vazio: false
   
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "world;-839;8;1109"
-  Entrada: "world;-839;8;1109"
-  Aguardando: "world;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "world;-839;8;1109;30.50;226.10"
+  Entrada: "world;-839;8;1109;30.50;226.10"
+  Aguardando: "world;-1535;7;1706;30.50;226.10"
 
 Premios:
-  Primeiro_Lugar:
-    - "give $player$ diamond 3"
-  Segundo_Lugar:
-    - "give $player$ diamond 2"
-  Terceiro_Lugar:
-    - "give $player$ diamond 1"
-  Money: 5000.0
+  1_Lugar:
+    Comandos:
+      - "give $player$ diamond 3"
+    Money: 5000.0
+  2_Lugar:
+    Comandos:
+      - "give $player$ diamond 2"
+    Money: 3000.0
+  3_Lugar:
+    Comandos:
+      - "give $player$ diamond 1"
+    Money: 1000.0
 
 Mensagens:
   Aberto:

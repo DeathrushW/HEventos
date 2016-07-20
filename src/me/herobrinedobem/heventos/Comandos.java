@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import me.herobrinedobem.heventos.api.EventoBase;
 import me.herobrinedobem.heventos.api.EventoType;
+import me.herobrinedobem.heventos.api.HEventosAPI;
 import me.herobrinedobem.heventos.api.listeners.EventoStartEvent;
 import me.herobrinedobem.heventos.api.listeners.EventoStopEvent;
 import me.herobrinedobem.heventos.api.listeners.EventoPlayerJoinEvent;
@@ -50,11 +51,21 @@ public class Comandos implements CommandExecutor {
 								if (HEventos.getHEventos().getEventosController().getEvento().isVip()) {
 									if (p.hasPermission("heventos.vip") || p.hasPermission("heventos.admin")) {
 										if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
-											if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
-												HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+											
+											if(HEventos.getHEventos().getSc() != null){
+												if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
+													HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+												}
+											}else{
+												if(HEventos.getHEventos().getCore() != null){
+													if (HEventos.getHEventos().getCore().getClanPlayerManager().getClanPlayer(p) != null) {
+														HEventos.getHEventos().getCore().getClanPlayerManager().getClanPlayer(p).setFriendlyFire(true);
+													}
+												}
 											}
-										} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
-											if (Comandos.checkInventory(p)) {
+										}
+										if (HEventos.getHEventos().getEventosController().getEvento().isInventoryEmpty()) {
+											if (HEventosAPI.checkInventory(p)) {
 												p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 												return false;
 											}
@@ -74,11 +85,20 @@ public class Comandos implements CommandExecutor {
 									}
 								} else {
 									if (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.KILLER) {
-										if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
-											HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+										if(HEventos.getHEventos().getSc() != null){
+											if (HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p) != null) {
+												HEventos.getHEventos().getSc().getClanManager().getClanPlayer(p).setFriendlyFire(true);
+											}
+										}else{
+											if(HEventos.getHEventos().getCore() != null){
+												if (HEventos.getHEventos().getCore().getClanPlayerManager().getClanPlayer(p) != null) {
+													HEventos.getHEventos().getCore().getClanPlayerManager().getClanPlayer(p).setFriendlyFire(true);
+												}
+											}
 										}
-									} else if ((HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.PAINTBALL) || (HEventos.getHEventos().getEventosController().getEvento().getEventoType() == EventoType.BOW_SPLEEF)) {
-										if (Comandos.checkInventory(p)) {
+									}
+									if (HEventos.getHEventos().getEventosController().getEvento().isInventoryEmpty()) {
+										if (HEventosAPI.checkInventory(p)) {
 											p.sendMessage(HEventos.getHEventos().getConfigUtil().getMsgInventarioVazio());
 											return false;
 										}
@@ -306,19 +326,21 @@ public class Comandos implements CommandExecutor {
 						HEventos.getHEventos().getServer().broadcastMessage("  ");
 						return true;
 					}
-				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("topvencedores"))) {
-					if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-						HEventos.getHEventos().getMysql().getTOPWins(p);
-					} else {
-						HEventos.getHEventos().getSqlite().getTOPWins(p);
+				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("top"))) {
+					HEventos.getHEventos().getDatabaseManager().getTOPWins(p);
+					if(args[1].equalsIgnoreCase("participacoes")){
+						HEventos.getHEventos().getDatabaseManager().getTOPParticipations(p);
+						return true;
+					}else if(args[1].equalsIgnoreCase("vencedores")){
+						HEventos.getHEventos().getDatabaseManager().getTOPWins(p);
+						return true;
+					}else{
+						for (final String s : HEventos.getHEventos().getConfig().getStringList("Mensagens.Default")) {
+							p.sendMessage(s.replace("&", "§"));
+						}
+						return true;
 					}
-				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("topparticipacoes"))) {
-					if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-						HEventos.getHEventos().getMysql().getTOPParticipations(p);
-					} else {
-						HEventos.getHEventos().getSqlite().getTOPParticipations(p);
-					}
-				} else if ((args.length == 2) && (args[0].equalsIgnoreCase("setentrada"))) {
+				}else if ((args.length == 2) && (args[0].equalsIgnoreCase("setentrada"))) {
 					if (p.hasPermission("heventos.admin")) {
 						if (HEventos.getHEventos().getEventosController().hasEvento(args[1])) {
 							final EventoBase evento = HEventos.getHEventos().getEventosController().loadEvento(args[1]);
@@ -389,7 +411,7 @@ public class Comandos implements CommandExecutor {
 				} else if ((args.length == 1) && (args[0].equalsIgnoreCase("reload"))) {
 					if (p.hasPermission("heventos.admin")) {
 						HEventos.getHEventos().reloadConfig();
-						HEventos.getHEventos().getConfigUtil().setupConfigUtil();
+						HEventos.getHEventos().getConfigUtil().setupConfigUtils();
 						p.sendMessage("§4[Evento] §cConfiguraçao recarregada com sucesso!");
 						return true;
 					}
@@ -432,8 +454,17 @@ public class Comandos implements CommandExecutor {
 							p.getInventory().addItem(item);
 							p.updateInventory();
 							return true;
+						} else if (args[1].equalsIgnoreCase("paintball")) {
+							final ItemStack item = new ItemStack(Material.IRON_AXE, 1);
+							final ItemMeta meta = item.getItemMeta();
+							meta.setDisplayName("§4§lEvento Paintball");
+							meta.setLore(Arrays.asList("§6* Clique com o botao direito para marcar a posicao 1 do chao", "§6* Clique com o botao esquerdo para marcar a posicao 2 do chao"));
+							item.setItemMeta(meta);
+							p.getInventory().addItem(item);
+							p.updateInventory();
+							return true;
 						} else {
-							p.sendMessage("§4[Evento] §cUtilize /evento tool <spleef/minamortal/bowspleef>");
+							p.sendMessage("§4[Evento] §cUtilize /evento tool <spleef/minamortal/bowspleef/paintball>");
 							return true;
 						}
 					}
@@ -467,22 +498,9 @@ public class Comandos implements CommandExecutor {
 		final int x = (int) loc.getX();
 		final int y = (int) loc.getY();
 		final int z = (int) loc.getZ();
-		return world + ";" + String.valueOf(x) + ";" + String.valueOf(y) + ";" + String.valueOf(z);
+		final float yaw = (float) loc.getYaw();
+		final float pitch = (float) loc.getPitch();
+		return world + ";" + String.valueOf(x) + ";" + String.valueOf(y) + ";" + String.valueOf(z) + ";" + String.valueOf(yaw) + ";" + String.valueOf(pitch);
 	}
-
-	private static boolean checkItemStacks(final ItemStack[] ises) {
-  		for(ItemStack is : ises)
-    			if(is != null && is.getType() != Material.AIR)
-      				return true;
-  		return false;
-	}
-	
-	private static boolean checkInventory(final Player player) {
-		if((player != null) && (player.isOnline())) {
-			return (checkItemStacks(player.getInventory().getArmorContents()) && checkItemStacks(player.getInventory().getContents()));
-		return false;
-	}
-	
-	
 
 }

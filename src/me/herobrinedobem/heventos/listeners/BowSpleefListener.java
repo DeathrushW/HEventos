@@ -9,33 +9,31 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.api.EventoBaseListener;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerLoseEvent;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerWinEvent;
 import me.herobrinedobem.heventos.eventos.BowSpleef;
 
 public class BowSpleefListener extends EventoBaseListener {
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
-	private void onPlayerMoveEvent(final PlayerMoveEvent e) {
+	private void onPlayerMoveEvent(PlayerMoveEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if (HEventos.getHEventos().getEventosController().getEvento() instanceof BowSpleef) {
-				final BowSpleef bows = (BowSpleef) HEventos.getHEventos().getEventosController().getEvento();
+				BowSpleef bows = (BowSpleef) HEventos.getHEventos().getEventosController().getEvento();
 				if (bows.getParticipantes().contains(e.getPlayer().getName())) {
 					if (bows.isAberto() == false) {
 						if (e.getFrom() != e.getTo()) {
-							if (e.getTo().getY() < (bows.getChao1().getY() - 10)) {
-								for (final String s : bows.getConfig().getStringList("Mensagens.Eliminado")) {
-									HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", e.getPlayer().getName()));
-								}
-								e.getPlayer().getInventory().clear();
-								e.getPlayer().updateInventory();
-								bows.getParticipantes().remove(e.getPlayer().getName());
-								e.getPlayer().teleport(bows.getSaida());
-								if (bows.getParticipantes().size() == 1) {
-									for (final String sa : bows.getConfig().getStringList("Mensagens.Vencedor")) {
-										for (final String s : bows.getParticipantes()) {
-											bows.getPlayerByName(s).sendMessage(sa.replace("$player$", bows.getPlayerByName(bows.getParticipantes().get(0)).getName()).replace("&", "§"));
-										}
+							if (e.getTo().getY() < (bows.getChao().getLowerLocation().getY() - 2)) {
+								for(String p : bows.getParticipantes()){
+									for (String s : bows.getConfig().getStringList("Mensagens.Eliminado")) {
+										bows.getPlayerByName(p).sendMessage(s.replace("&", "§").replace("$player$", e.getPlayer().getName()));
 									}
+								}
+								EventoPlayerLoseEvent event = new EventoPlayerLoseEvent(e.getPlayer(), HEventos.getHEventos().getEventosController().getEvento());
+								HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+								if (bows.getParticipantes().size() == 1) {
+									EventoPlayerWinEvent event2 = new EventoPlayerWinEvent(bows.getPlayerByName(bows.getParticipantes().get(0)), HEventos.getHEventos().getEventosController().getEvento(), 0);
+									HEventos.getHEventos().getServer().getPluginManager().callEvent(event2);
 									bows.stopEvent();
 								}
 							}
@@ -48,12 +46,12 @@ public class BowSpleefListener extends EventoBaseListener {
 
 	@Override
 	@EventHandler
-	public void onEntityDamageByEntityEvent(final EntityDamageByEntityEvent e) {
+	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if ((HEventos.getHEventos().getEventosController().getEvento().isAberto() == false) && (HEventos.getHEventos().getEventosController().getEvento().isOcorrendo() == true)) {
-				final BowSpleef bows = (BowSpleef) HEventos.getHEventos().getEventosController().getEvento();
+				BowSpleef bows = (BowSpleef) HEventos.getHEventos().getEventosController().getEvento();
 				if (e.getDamager() instanceof Player) {
-					final Player p = (Player) e.getDamager();
+					Player p = (Player) e.getDamager();
 					if (bows.isAssistirAtivado()) {
 						if (bows.getCamarotePlayers().contains(p.getName())) {
 							e.setCancelled(true);
@@ -63,13 +61,13 @@ public class BowSpleefListener extends EventoBaseListener {
 						e.setCancelled(true);
 					}
 				} else if (e.getDamager() instanceof Arrow) {
-					final Arrow projectile = (Arrow) e.getDamager();
+					Arrow projectile = (Arrow) e.getDamager();
 					if (projectile.getShooter() instanceof Block) {
-						final Player atirou = (Player) projectile.getShooter();
-						final Block atingido = (Block) e.getEntity();
+						Player atirou = (Player) projectile.getShooter();
+						Block atingido = (Block) e.getEntity();
 						if (atingido.getType() == Material.TNT) {
 							if (bows.isPodeQuebrar() == false) {
-								for (final String s : bows.getConfig().getStringList("Mensagens.Aguarde_Quebrar")) {
+								for (String s : bows.getConfig().getStringList("Mensagens.Aguarde_Quebrar")) {
 									atirou.sendMessage(s.replace("&", "§").replace("$tempo$", bows.getTempoInicial() + ""));
 								}
 							}

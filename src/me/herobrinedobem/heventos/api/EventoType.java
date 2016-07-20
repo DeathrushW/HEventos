@@ -35,7 +35,6 @@ public enum EventoType {
 				return EventoType.NORMAL;
 			case "outro":
 				return EventoType.OUTRO;
-			case "dev":
 			default:
 				return EventoType.NORMAL;
 		}

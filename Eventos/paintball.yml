@@ -9,18 +9,21 @@ Config:
   Assistir_Invisivel: true
   Contar_Vitoria: true
   Contar_Participacao: true
+  Inv_Vazio: false
   
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "world;-839;8;1109"
-  Entrada: "world;-839;8;1109"
-  Aguardando: "world;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "world;-839;8;1109;30.50;226.10"
+  Entrada: "world;-839;8;1109;30.50;226.10"
+  Aguardando: "world;-1535;7;1706;30.50;226.10"
   Pos_1: "world;-1535;7;1706"
   Pos_2: "world;-1535;7;1706"
 
 Premios:
-  Money_Kill: 500.0
+  Comandos:
+    - "give $player$ diamond 3"
   Money: 5000.0
+  Money_Kill: 500.0
 
 Mensagens:
   Aberto:
@@ -45,7 +48,7 @@ Mensagens:
   Vencedor:
     - "  "
     - "&9[PaintBall] &fO evento &6PaintBall &ffoi finalizado!"
-    - "&9[PaintBall] &fO time vencedor foi: &6$players$&f!"
+    - "&9[PaintBall] &fO time vencedor foi: &6$player$&f!"
     - "&9[PaintBall] &fPremio pago e jogadores teleportados para a saida!"
     - "  "
   Sem_Vencedor:
@@ -56,11 +59,6 @@ Mensagens:
   Cancelado:
     - "  "
     - "&4[PaintBall] &cEvento PaintBall foi cancelado!"
-    - "  "
-  Times:
-    - "  "
-    - "&9[PaintBall] &fTime 1: &6$time1$"
-    - "&9[PaintBall] &fTime 2: &6$time2$"
     - "  "
   Eliminado: "&9[PaintBall] &fO jogador &6$player$ &feliminou voce!"
   Eliminou: "&9[PaintBall] &fVoce eliminou o jogador &6$player$&f!"

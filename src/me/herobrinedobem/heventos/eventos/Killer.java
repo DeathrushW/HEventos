@@ -4,59 +4,70 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.HEventosAPI;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerWinEvent;
 import me.herobrinedobem.heventos.listeners.KillerListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 
 public class Killer extends EventoBase {
 
-	private final KillerListener listener;
+	private KillerListener listener;
 	private boolean msgTempo = false;
 	private int tempoMensagens, tempoMensagensCurrent, tempoPegarItens,
 			tempoPegarItensCurrent;
 
-	public Killer(final YamlConfiguration config) {
+	public Killer(YamlConfiguration config) {
 		super(config);
-		this.listener = new KillerListener();
-		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
-		this.tempoPegarItens = config.getInt("Config.Tempo_Pegar_Itens");
-		this.tempoPegarItensCurrent = config.getInt("Config.Tempo_Pegar_Itens");
-		this.tempoMensagens = config.getInt("Config.Mensagens_Tempo_Minutos") * 60;
-		this.tempoMensagensCurrent = this.tempoMensagens;
+		listener = new KillerListener();
+		HEventos.getHEventos().getServer().getPluginManager().registerEvents(listener, HEventos.getHEventos());
+		tempoPegarItens = config.getInt("Config.Tempo_Pegar_Itens");
+		tempoPegarItensCurrent = config.getInt("Config.Tempo_Pegar_Itens");
+		tempoMensagens = config.getInt("Config.Mensagens_Tempo_Minutos") * 60;
+		tempoMensagensCurrent = tempoMensagens;
 	}
 
 	@Override
 	public void startEventMethod() {
-		Killer.this.getEntrada().getWorld().setTime(17000);
+		getEntrada().getWorld().setTime(17000);
+		for (String s : getParticipantes()) {
+			getPlayerByName(s).teleport(HEventosAPI.getLocation(getConfig(), "Localizacoes.Entrada"));
+		}
 	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((Killer.this.isOcorrendo() == true) && (Killer.this.isAberto() == false)) {
-			if (Killer.this.getParticipantes().size() > 1) {
-				if (Killer.this.tempoMensagensCurrent == 0) {
-					for (final String s : Killer.this.getConfig().getStringList("Mensagens.Status")) {
-						HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$jogadores$", Killer.this.getParticipantes().size() + ""));
+		if ((isOcorrendo() == true) && (isAberto() == false)) {
+			if (getParticipantes().size() > 1) {
+				if (tempoMensagensCurrent == 0) {
+					for (String s : getConfig().getStringList("Mensagens.Status")) {
+						HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$jogadores$", getParticipantes().size() + ""));
 					}
-					Killer.this.tempoMensagensCurrent = Killer.this.tempoMensagens;
+					tempoMensagensCurrent = tempoMensagens;
 				} else {
-					Killer.this.tempoMensagensCurrent--;
+					tempoMensagensCurrent--;
 				}
 			} else {
-				if (Killer.this.getParticipantes().size() == 1) {
-					if (Killer.this.tempoPegarItensCurrent == 0) {
-						final Player p = Killer.this.getPlayerByName(Killer.this.getParticipantes().get(0));
-						Killer.this.encerrarComVencedor(p);
-					} else {
-						if (Killer.this.msgTempo == false) {
-							for (final String s : Killer.this.getParticipantes()) {
-								Killer.this.getPlayerByName(s).sendMessage(Killer.this.getConfig().getString("Mensagens.Tempo_Pegar_Itens").replace("&", "§"));
-							}
-							Killer.this.msgTempo = true;
+				if (getParticipantes().size() == 1) {
+					if (tempoPegarItensCurrent == 0) {
+						Player player = null;
+						for(String s : getParticipantes()){
+							player = getPlayerByName(s);
 						}
-						Killer.this.tempoPegarItensCurrent--;
+						EventoPlayerWinEvent event = new EventoPlayerWinEvent(player, this, 0);
+						HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+						stopEvent();
+					} else {
+						if (msgTempo == false) {
+							for (String s : getParticipantes()) {
+								getPlayerByName(s).sendMessage(getConfig().getString("Mensagens.Tempo_Pegar_Itens").replace("&", "§"));
+							}
+							msgTempo = true;
+						}
+						tempoPegarItensCurrent--;
 					}
 				} else {
-					Killer.this.encerrarSemVencedor();
+					sendMessageList("Mensagens.Sem_Vencedor");
+					stopEvent();
 				}
 			}
 		}
@@ -64,63 +75,24 @@ public class Killer extends EventoBase {
 
 	@Override
 	public void cancelEventMethod() {
-		this.sendMessageList("Mensagens.Cancelado");
-	}
-
-	public void encerrarComVencedor(final Player p) {
-		for (final String s : this.getParticipantes()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		for (final String s : this.getParticipantes()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		for (final String s : this.getConfig().getStringList("Mensagens.Vencedor")) {
-			HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$player$", p.getName()));
-		}
-		for (final String s : this.getConfig().getStringList("Premios.Comandos")) {
-			HEventos.getHEventos().getServer().dispatchCommand(HEventos.getHEventos().getServer().getConsoleSender(), s.replace("$player$", p.getName()));
-		}
-		if (Killer.this.isContarVitoria()) {
-			if (HEventos.getHEventos().getConfigUtil().isMysqlAtivado()) {
-				HEventos.getHEventos().getMysql().addWinnerPoint(p.getName());
-			} else {
-				HEventos.getHEventos().getSqlite().addWinnerPoint(p.getName());
-			}
-		}
-		HEventos.getHEventos().getEconomy().depositPlayer(p.getName(), this.getMoney());
-		this.resetEvent();
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId());
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId2());
-	}
-
-	public void encerrarSemVencedor() {
-		for (final String s : this.getParticipantes()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		for (final String s : this.getCamarotePlayers()) {
-			this.getPlayerByName(s).teleport(this.getSaida());
-		}
-		this.sendMessageList("Mensagens.Sem_Vencedor");
-		this.resetEvent();
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId());
-		HEventos.getHEventos().getServer().getScheduler().cancelTask(this.getId2());
+		sendMessageList("Mensagens.Cancelado");
 	}
 
 	@Override
 	public void resetEvent() {
 		super.resetEvent();
-		this.tempoPegarItens = this.getConfig().getInt("Config.Tempo_Pegar_Itens");
-		this.tempoPegarItensCurrent = this.getConfig().getInt("Config.Tempo_Pegar_Itens");
-		this.tempoMensagens = this.getConfig().getInt("Config.Mensagens_Tempo_Minutos") * 60;
-		this.tempoMensagensCurrent = this.tempoMensagens;
-		BukkitEventHelper.unregisterEvents(this.listener, HEventos.getHEventos());
+		tempoPegarItens = getConfig().getInt("Config.Tempo_Pegar_Itens");
+		tempoPegarItensCurrent = getConfig().getInt("Config.Tempo_Pegar_Itens");
+		tempoMensagens = getConfig().getInt("Config.Mensagens_Tempo_Minutos") * 60;
+		tempoMensagensCurrent = tempoMensagens;
+		BukkitEventHelper.unregisterEvents(listener, HEventos.getHEventos());
 	}
 
 	public boolean isMsgTempo() {
 		return this.msgTempo;
 	}
 
-	public void setMsgTempo(final boolean msgTempo) {
+	public void setMsgTempo(boolean msgTempo) {
 		this.msgTempo = msgTempo;
 	}
 
@@ -128,7 +100,7 @@ public class Killer extends EventoBase {
 		return this.tempoMensagens;
 	}
 
-	public void setTempoMensagens(final int tempoMensagens) {
+	public void setTempoMensagens(int tempoMensagens) {
 		this.tempoMensagens = tempoMensagens;
 	}
 
@@ -136,7 +108,7 @@ public class Killer extends EventoBase {
 		return this.tempoMensagensCurrent;
 	}
 
-	public void setTempoMensagensCurrent(final int tempoMensagensCurrent) {
+	public void setTempoMensagensCurrent(int tempoMensagensCurrent) {
 		this.tempoMensagensCurrent = tempoMensagensCurrent;
 	}
 
@@ -144,7 +116,7 @@ public class Killer extends EventoBase {
 		return this.tempoPegarItens;
 	}
 
-	public void setTempoPegarItens(final int tempoPegarItens) {
+	public void setTempoPegarItens(int tempoPegarItens) {
 		this.tempoPegarItens = tempoPegarItens;
 	}
 
@@ -152,7 +124,7 @@ public class Killer extends EventoBase {
 		return this.tempoPegarItensCurrent;
 	}
 
-	public void setTempoPegarItensCurrent(final int tempoPegarItensCurrent) {
+	public void setTempoPegarItensCurrent(int tempoPegarItensCurrent) {
 		this.tempoPegarItensCurrent = tempoPegarItensCurrent;
 	}
 

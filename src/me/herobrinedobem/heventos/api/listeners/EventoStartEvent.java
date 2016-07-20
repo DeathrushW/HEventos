@@ -6,7 +6,7 @@ import me.herobrinedobem.heventos.api.EventoBase;
 
 public class EventoStartEvent extends Event {
 	
-	private final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	private EventoBase evento;
 	private boolean automaticStart;
 	
@@ -15,8 +15,11 @@ public class EventoStartEvent extends Event {
 		this.automaticStart = automaticStart;
 	}
 	
-	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+		 
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 	

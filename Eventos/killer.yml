@@ -11,12 +11,13 @@ Config:
   Assistir_Invisivel: true
   Contar_Vitoria: true
   Contar_Participacao: true
+  Inv_Vazio: false
 
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "VIP;-639;5;743"
-  Entrada: "VIP;-639;5;743"
-  Aguardando: "evento;0;4;1"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "VIP;-639;5;743;30.50;226.10"
+  Entrada: "VIP;-639;5;743;30.50;226.10"
+  Aguardando: "evento;0;4;1;30.50;226.10"
 
 Premios:
   Comandos:

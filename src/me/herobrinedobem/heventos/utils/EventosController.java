@@ -64,9 +64,9 @@ public class EventosController {
 			}
 		}
 		if (contains) {
-			return false;
-		}else{
 			return true;
+		}else{
+			return false;
 		}
 	}
 	

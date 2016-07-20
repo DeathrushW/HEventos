@@ -10,16 +10,17 @@ Config:
   Contar_Vitoria: true
   Contar_Participacao: true
   Tempo_Batata_Explodir: 30
+  Inv_Vazio: false
   
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "VIP;-839;8;1109"
-  Entrada: "VIP;-839;8;1109"
-  Aguardando: "VIP;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "VIP;-839;8;1109;30.50;226.10"
+  Entrada: "VIP;-839;8;1109;30.50;226.10"
+  Aguardando: "VIP;-1535;7;1706;30.50;226.10"
   
 Premios:
-  Itens:
-  - give $player$ diamond 3
+  Comandos:
+    - give $player$ diamond 3
   Money: 5000
   
 Mensagens:

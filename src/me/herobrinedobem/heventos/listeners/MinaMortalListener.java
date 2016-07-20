@@ -9,10 +9,10 @@ import me.herobrinedobem.heventos.HEventos;
 public class MinaMortalListener implements Listener {
 
 	@EventHandler
-	public void onPotionSplashEvent(final PotionSplashEvent e) {
+	public void onPotionSplashEvent(PotionSplashEvent e) {
 		if (HEventos.getHEventos().getEventosController().getEvento() != null) {
 			if (e.getPotion().getShooter() instanceof Player) {
-				final Player p = (Player) e.getPotion().getShooter();
+				Player p = (Player) e.getPotion().getShooter();
 				if (HEventos.getHEventos().getEventosController().getEvento().getCamarotePlayers().contains(p.getName())) {
 					e.setCancelled(true);
 				}

@@ -7,92 +7,96 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.HEventosAPI;
 import me.herobrinedobem.heventos.listeners.MinaMortalListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 import me.herobrinedobem.heventos.utils.Cuboid;
 
 public class MinaMortal extends EventoBase {
 
-	private final MinaMortalListener listener;
+	private MinaMortalListener listener;
 	private int tempoDeEvento, tempoDeEventoCurrent, tempoMensagens,
 			tempoMensagensCurrent;
 
-	public MinaMortal(final YamlConfiguration config) {
+	public MinaMortal(YamlConfiguration config) {
 		super(config);
-		this.listener = new MinaMortalListener();
-		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
-		this.tempoDeEvento = config.getInt("Config.Evento_Tempo_Minutos") * 60;
-		this.tempoMensagens = config.getInt("Config.Mensagens_Tempo_Minutos") * 60;
-		this.tempoDeEventoCurrent = this.tempoDeEvento;
-		this.tempoMensagensCurrent = this.tempoMensagens;
-	}
-
-	@Override
-	public void startEventMethod() {
-		final Cuboid cubo = new Cuboid(MinaMortal.this.getLocation("Localizacoes.Mina_1"), MinaMortal.this.getLocation("Localizacoes.Mina_2"));
-		final ArrayList<String> blocosConfig = new ArrayList<>();
-		for (final String s : MinaMortal.this.getConfig().getString("Config.Minerios").split(";")) {
+		listener = new MinaMortalListener();
+		HEventos.getHEventos().getServer().getPluginManager().registerEvents(listener, HEventos.getHEventos());
+		tempoDeEvento = config.getInt("Config.Evento_Tempo_Minutos") * 60;
+		tempoMensagens = config.getInt("Config.Mensagens_Tempo_Minutos") * 60;
+		tempoDeEventoCurrent = tempoDeEvento;
+		tempoMensagensCurrent = tempoMensagens;
+		Cuboid cubo = new Cuboid(HEventosAPI.getLocation(getConfig(), "Localizacoes.Mina_1"), HEventosAPI.getLocation(getConfig(), "Localizacoes.Mina_2"));
+		ArrayList<String> blocosConfig = new ArrayList<>();
+		for (String s : getConfig().getString("Config.Minerios").split(";")) {
 			blocosConfig.add(s);
 		}
-		for (final Block b : cubo.getBlocks()) {
-			final Random r = new Random();
-			if (r.nextInt(100) <= MinaMortal.this.getConfig().getInt("Config.Porcentagem_De_Minerios")) {
-				final String bloco = blocosConfig.get(r.nextInt(blocosConfig.size()));
+		for (Block b : cubo.getBlocks()) {
+			Random r = new Random();
+			if (r.nextInt(100) <= getConfig().getInt("Config.Porcentagem_De_Minerios")) {
+				String bloco = blocosConfig.get(r.nextInt(blocosConfig.size()));
 				b.setType(Material.getMaterial(Integer.parseInt(bloco)));
 			} else {
 				b.setType(Material.STONE);
 			}
 		}
 	}
+	
+	@Override
+	public void startEventMethod() {
+		for (String s : getParticipantes()) {
+			getPlayerByName(s).teleport(HEventosAPI.getLocation(getConfig(), "Localizacoes.Entrada"));
+		}
+	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((MinaMortal.this.isOcorrendo() == true) && (MinaMortal.this.isAberto() == false)) {
-			if (MinaMortal.this.getParticipantes().size() > 0) {
-				if (MinaMortal.this.tempoDeEventoCurrent > 0) {
-					MinaMortal.this.tempoDeEventoCurrent--;
-					if (MinaMortal.this.tempoMensagensCurrent == 0) {
-						for (final String s : MinaMortal.this.getConfig().getStringList("Mensagens.Status")) {
-							HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$tempo$", MinaMortal.this.tempoDeEventoCurrent + ""));
+		if ((isOcorrendo() == true) && (isAberto() == false)) {
+			if (getParticipantes().size() > 0) {
+				if (tempoDeEventoCurrent > 0) {
+					tempoDeEventoCurrent--;
+					if (tempoMensagensCurrent == 0) {
+						for (String s : getConfig().getStringList("Mensagens.Status")) {
+							HEventos.getHEventos().getServer().broadcastMessage(s.replace("&", "§").replace("$tempo$", tempoDeEventoCurrent + ""));
 						}
-						MinaMortal.this.tempoMensagensCurrent = MinaMortal.this.tempoMensagens;
+						tempoMensagensCurrent = tempoMensagens;
 					} else {
-						MinaMortal.this.tempoMensagensCurrent--;
+						tempoMensagensCurrent--;
 					}
 				} else {
-					MinaMortal.this.stopEvent();
+					stopEvent();
 				}
 			} else {
-				MinaMortal.this.stopEvent();
+				stopEvent();
 			}
 		}
 	}
 
 	@Override
 	public void stopEventMethod() {
-		this.sendMessageList("Mensagens.Finalizado");
+		sendMessageList("Mensagens.Finalizado");
 	}
 
 	@Override
 	public void cancelEventMethod() {
-		this.sendMessageList("Mensagens.Cancelado");
+		sendMessageList("Mensagens.Cancelado");
 	}
 
 	@Override
 	public void resetEvent() {
 		super.resetEvent();
-		this.tempoDeEvento = this.getConfig().getInt("Config.Evento_Tempo_Minutos") * 60;
-		this.tempoMensagens = this.getConfig().getInt("Config.Mensagens_Tempo_Minutos") * 60;
-		this.tempoDeEventoCurrent = this.tempoDeEvento;
-		this.tempoMensagensCurrent = this.tempoMensagens;
-		BukkitEventHelper.unregisterEvents(this.listener, HEventos.getHEventos());
+		tempoDeEvento = getConfig().getInt("Config.Evento_Tempo_Minutos") * 60;
+		tempoMensagens = getConfig().getInt("Config.Mensagens_Tempo_Minutos") * 60;
+		tempoDeEventoCurrent = tempoDeEvento;
+		tempoMensagensCurrent = tempoMensagens;
+		BukkitEventHelper.unregisterEvents(listener, HEventos.getHEventos());
 	}
 
 	public int getTempoDeEvento() {
 		return this.tempoDeEvento;
 	}
 
-	public void setTempoDeEvento(final int tempoDeEvento) {
+	public void setTempoDeEvento(int tempoDeEvento) {
 		this.tempoDeEvento = tempoDeEvento;
 	}
 
@@ -100,7 +104,7 @@ public class MinaMortal extends EventoBase {
 		return this.tempoDeEventoCurrent;
 	}
 
-	public void setTempoDeEventoCurrent(final int tempoDeEventoCurrent) {
+	public void setTempoDeEventoCurrent(int tempoDeEventoCurrent) {
 		this.tempoDeEventoCurrent = tempoDeEventoCurrent;
 	}
 
@@ -108,7 +112,7 @@ public class MinaMortal extends EventoBase {
 		return this.tempoMensagens;
 	}
 
-	public void setTempoMensagens(final int tempoMensagens) {
+	public void setTempoMensagens(int tempoMensagens) {
 		this.tempoMensagens = tempoMensagens;
 	}
 
@@ -116,7 +120,7 @@ public class MinaMortal extends EventoBase {
 		return this.tempoMensagensCurrent;
 	}
 
-	public void setTempoMensagensCurrent(final int tempoMensagensCurrent) {
+	public void setTempoMensagensCurrent(int tempoMensagensCurrent) {
 		this.tempoMensagensCurrent = tempoMensagensCurrent;
 	}
 

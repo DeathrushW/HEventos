@@ -12,12 +12,13 @@ Config:
   Contar_Participacao: true
   Minerios: "56;14;15;16;73;129"
   Porcentagem_De_Minerios: 20
+  Inv_Vazio: false
 
 Localizacoes:
-  Saida: "world;-110;92;1482"
-  Camarote: "evento;-51;106;251"
-  Entrada: "evento;-51;106;251"
-  Aguardando: "VIP;-1535;7;1706"
+  Saida: "world;-110;92;1482;30.50;226.10"
+  Camarote: "evento;-51;106;251;30.50;226.10"
+  Entrada: "evento;-51;106;251;30.50;226.10"
+  Aguardando: "VIP;-1535;7;1706;30.50;226.10"
   Mina_1: "evento;-30;105;248"
   Mina_2: "evento;28;115;194"
 

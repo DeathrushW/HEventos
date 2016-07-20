@@ -1,76 +1,81 @@
 package me.herobrinedobem.heventos.eventos;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import me.herobrinedobem.heventos.HEventos;
 import me.herobrinedobem.heventos.api.EventoBase;
+import me.herobrinedobem.heventos.api.HEventosAPI;
+import me.herobrinedobem.heventos.api.listeners.EventoPlayerWinEvent;
 import me.herobrinedobem.heventos.listeners.SemaforoListener;
 import me.herobrinedobem.heventos.utils.BukkitEventHelper;
 
 public class Semaforo extends EventoBase {
 
-	private final SemaforoListener listener;
+	private SemaforoListener listener;
 	private int tempoTroca;
 	private int tempoTrocaCurrent;
 	private boolean podeAndar;
 
-	public Semaforo(final YamlConfiguration config) {
+	public Semaforo(YamlConfiguration config) {
 		super(config);
-		this.listener = new SemaforoListener();
-		HEventos.getHEventos().getServer().getPluginManager().registerEvents(this.listener, HEventos.getHEventos());
-		this.tempoTroca = config.getInt("Config.Tempo_Troca");
-		this.tempoTrocaCurrent = config.getInt("Config.Tempo_Troca");
-		this.podeAndar = true;
+		listener = new SemaforoListener();
+		HEventos.getHEventos().getServer().getPluginManager().registerEvents(listener, HEventos.getHEventos());
+		tempoTroca = config.getInt("Config.Tempo_Troca");
+		tempoTrocaCurrent = config.getInt("Config.Tempo_Troca");
+		podeAndar = true;
 	}
 
 	@Override
 	public void startEventMethod() {
-		for (final String s : this.getParticipantes()) {
-			for (final String msg : this.getConfig().getStringList("Mensagens.Verde")) {
-				this.getPlayerByName(s).sendMessage(msg.replace("&", "§"));
+		for (String s : getParticipantes()) {
+			for (String msg : getConfig().getStringList("Mensagens.Verde")) {
+				getPlayerByName(s).sendMessage(msg.replace("&", "§"));
 			}
+			getPlayerByName(s).teleport(HEventosAPI.getLocation(getConfig(), "Localizacoes.Entrada"));
 		}
 	}
 
 	@Override
 	public void scheduledMethod() {
-		if ((this.isOcorrendo() == true) && (this.isAberto() == false)) {
-			if (this.tempoTrocaCurrent <= 0) {
-				if (this.podeAndar) {
-					this.podeAndar = false;
-					this.tempoTrocaCurrent = this.tempoTroca;
-				} else {
-					this.podeAndar = true;
-					for (final String s : this.getParticipantes()) {
-						for (final String msg : this.getConfig().getStringList("Mensagens.Verde")) {
-							this.getPlayerByName(s).sendMessage(msg.replace("&", "§"));
-						}
-					}
-					this.tempoTrocaCurrent = this.tempoTroca;
-				}
-			} else if (this.tempoTrocaCurrent == (this.tempoTroca / 2)) {
-				if (this.podeAndar) {
-					for (final String s : this.getParticipantes()) {
-						for (final String msg : this.getConfig().getStringList("Mensagens.Amarelo")) {
-							this.getPlayerByName(s).sendMessage(msg.replace("&", "§"));
-						}
+		if ((isOcorrendo() == true) && (isAberto() == false)) {
+			if (tempoTrocaCurrent == 0) {
+				podeAndar = true;
+				for (String s : getParticipantes()) {
+					for (String msg : getConfig().getStringList("Mensagens.Verde")) {
+						getPlayerByName(s).sendMessage(msg.replace("&", "§"));
 					}
 				}
-				this.tempoTrocaCurrent--;
-			} else if (this.tempoTrocaCurrent == 2) {
-				if (this.podeAndar) {
-					for (final String s : this.getParticipantes()) {
-						for (final String msg : this.getConfig().getStringList("Mensagens.Vermelho")) {
-							this.getPlayerByName(s).sendMessage(msg.replace("&", "§"));
-						}
+				tempoTrocaCurrent = tempoTroca;
+			} else if (tempoTrocaCurrent == (tempoTroca / 2)) {
+				for (String s : getParticipantes()) {
+					for (String msg : getConfig().getStringList("Mensagens.Amarelo")) {
+						getPlayerByName(s).sendMessage(msg.replace("&", "§"));
 					}
 				}
-				this.tempoTrocaCurrent--;
+				tempoTrocaCurrent--;
+			} else if (tempoTrocaCurrent == 5) {
+				for (String s : getParticipantes()) {
+					for (String msg : getConfig().getStringList("Mensagens.Vermelho")) {
+						getPlayerByName(s).sendMessage(msg.replace("&", "§"));
+					}
+				}
+				podeAndar = false;
+				tempoTrocaCurrent--;
 			} else {
-				this.tempoTrocaCurrent--;
+				tempoTrocaCurrent--;
 			}
-			if (this.getParticipantes().size() <= 0) {
-				this.sendMessageList("Mensagens.Sem_Vencedor");
-				this.stopEvent();
+			
+			if (getParticipantes().size() <= 0) {
+				sendMessageList("Mensagens.Sem_Vencedor");
+				stopEvent();
+			}else if(getParticipantes().size() == 1){
+				Player player = null;
+				for(String s : getParticipantes()){
+					player = getPlayerByName(s);
+				}
+				EventoPlayerWinEvent event = new EventoPlayerWinEvent(player, this, 0);
+				HEventos.getHEventos().getServer().getPluginManager().callEvent(event);
+				stopEvent();
 			}
 		}
 	}
@@ -83,9 +88,9 @@ public class Semaforo extends EventoBase {
 	@Override
 	public void resetEvent() {
 		super.resetEvent();
-		this.tempoTroca = this.getConfig().getInt("Config.Tempo_Troca");
-		this.tempoTrocaCurrent = this.getConfig().getInt("Config.Tempo_Troca");
-		this.podeAndar = true;
+		tempoTroca = this.getConfig().getInt("Config.Tempo_Troca");
+		tempoTrocaCurrent = this.getConfig().getInt("Config.Tempo_Troca");
+		podeAndar = true;
 		BukkitEventHelper.unregisterEvents(this.listener, HEventos.getHEventos());
 	}
 
@@ -93,7 +98,7 @@ public class Semaforo extends EventoBase {
 		return this.tempoTrocaCurrent;
 	}
 
-	public void setTempoTrocaCurrent(final int tempoTrocaCurrent) {
+	public void setTempoTrocaCurrent(int tempoTrocaCurrent) {
 		this.tempoTrocaCurrent = tempoTrocaCurrent;
 	}
 
@@ -101,7 +106,7 @@ public class Semaforo extends EventoBase {
 		return this.podeAndar;
 	}
 
-	public void setPodeAndar(final boolean podeAndar) {
+	public void setPodeAndar(boolean podeAndar) {
 		this.podeAndar = podeAndar;
 	}
 
